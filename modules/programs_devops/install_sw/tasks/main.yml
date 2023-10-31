@@ -86,9 +86,16 @@
 - name: Register ubuntu pro for updates
   ansible.builtin.shell:
     cmd: |
-     set -o pipefail
-     sudo pro attach "{{ token_pro_ubuntu }}"
+      set -o pipefail
+      sudo pro attach "{{ token_pro_ubuntu }}"
   register: token_pro
   changed_when: token_pro.rc != 0
   args:
     executable: /bin/bash
+
+- name: Add value to sudoers file
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    insertafter: 'Defaults\suse_pty'
+    line: "Defaults\ttimestamp_type=global"
+    validate: /usr/sbin/visudo -cf %s

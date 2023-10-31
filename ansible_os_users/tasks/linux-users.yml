@@ -4,10 +4,11 @@
     name: "{{ item }}"
   with_items:
     - acm_admin
+    - acm_user
 
 - name: Create master directory
   ansible.builtin.file:
-    path: /home/ack_slack/
+    path: /home/"{{ home_enterprice }}"
     state: directory
     mode: "0755"
 
@@ -15,10 +16,10 @@
   ansible.builtin.user:
     name: "{{ item.user }}"
     comment: "{{ item.fullname }}"
-    group: "{{ 'cnvadmin' if item.admin == True else 'cnvusers' }}"
+    group: "{{ 'acm_admin' if item.admin == True else 'acm_user' }}"
     password: "{{ item.password | password_hash('sha512') }}"
     create_home: true
-    home: /home/canvia/{{ item.user }}
+    home: /home/{{ home_enterprice }}/{{ item.user }}
     shell: /bin/bash
     update_password: on_create
   with_items:
@@ -35,7 +36,7 @@
 #
 # - name: Mostrar resultados
 #   ansible.builtin.debug:
-#     var: create_user_results.results[0].item.cannotchangepass
+#     var: create_ser_results.results[0].item.cannotchangepass
 
 - name: Eliminar antiguos usuarios de Canvia
   ansible.builtin.user:
@@ -58,7 +59,7 @@
 
 - name: Solicitar cambio de clave en el primer inicio de sesion
   ansible.builtin.command: chage -d 0 {{ item.user }}
-  loop: "{{ linux_users }}"
+  loop: "{{ generic_users }}"
   loop_control:
     label: "{{ item.user }} - {{ item.fullname }}"
   register: command_change_password
@@ -77,7 +78,7 @@
 - name: Crear directorio ~/bin
   ansible.builtin.file:
     state: directory
-    path: /home/canvia/{{ item.user }}/bin
+    path: /home/{{ home_enterprice }}/{{ item.user }}/bin
     mode: "0755"
     owner: root
     group: root
@@ -89,7 +90,7 @@
 - name: Evitar que cambien su clave
   ansible.builtin.template:
     src: templates/passwd
-    dest: /home/canvia/{{ item.user }}/bin/passwd
+    dest: /home/{{ home_enterprice }}/{{ item.user }}/bin/passwd
     mode: "0755"
   loop: "{{ generic_users }}"
   loop_control:
@@ -99,7 +100,7 @@
 - name: Modificar PATH de usuario en ~/.bashrc
   ansible.builtin.template:
     src: templates/bashrc
-    dest: /home/canvia/{{ item.user }}/.bashrc
+    dest: /home/{{ home_enterprice }}/{{ item.user }}/.bashrc
     mode: "0644"
   loop: "{{ generic_users }}"
   loop_control:

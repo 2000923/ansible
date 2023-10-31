@@ -199,12 +199,12 @@
       args:
         executable: /bin/bash
 
-    - name: create the directory to save ansible.cfg file
+    - name: Create the directory to save ansible.cfg file
       ansible.builtin.file:
         path: "~/data"
         mode: "0755"
 
-    - name: personalice the ansible-galaxy
+    - name: Personalice the ansible-galaxy
       ansible.builtin.get_url:
         url: "https://pastebin.com/dl/VAM1ATb7"
         dest: "~/data/ansible.cfg"
