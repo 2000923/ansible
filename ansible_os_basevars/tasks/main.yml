@@ -1,14 +1,12 @@
 ---
 - name: Deteccion de equipo fisico
-  when:
-    ansible_virtualization_role is defined and
+  when: ansible_virtualization_role is defined and
     ansible_virtualization_role == 'host'
   ansible.builtin.set_fact:
     hosttype: physical
 
 - name: Deteccion de equipo virtual
-  when:
-    ansible_virtualization_role is defined and
+  when: ansible_virtualization_role is defined and
     ansible_virtualization_role != 'host'
   block:
     - name: Virtual machine
@@ -18,8 +16,7 @@
     - name: VMware
       ansible.builtin.set_fact:
         hypervisor: vmware
-      when:
-        (ansible_virtualization_type is defined and
+      when: (ansible_virtualization_type is defined and
         ansible_virtualization_type == "VMware") or
         (ansible_system_vendor is defined and
         ansible_system_vendor | regex_search('vmware', ignorecase=True)) or
@@ -29,8 +26,7 @@
     - name: AWS
       ansible.builtin.set_fact:
         hypervisor: aws
-      when:
-        (ansible_virtualization_type is defined and
+      when: (ansible_virtualization_type is defined and
         (ansible_virtualization_type == "xen" or
         ansible_virtualization_type == "kvm")) and
         (ansible_product_version | regex_search('amazon', ignorecase=True) or
@@ -39,16 +35,14 @@
     - name: Azure
       ansible.builtin.set_fact:
         hypervisor: azure
-      when:
-        ansible_virtualization_type is defined and
+      when: ansible_virtualization_type is defined and
         ansible_virtualization_type == "VirtualPC" and
         ansible_system_vendor | regex_search('microsoft', ignorecase=True)
 
     - name: VirtualBox
-      ansible.builtin.set_fact: 
-        hypervisor: virtualbox 
-      when: 
-        ansible_virtualization_type is defined and 
+      ansible.builtin.set_fact:
+        hypervisor: virtualbox
+      when: ansible_virtualization_type is defined and
         ansible_virtualization_type == "virtualbox"
 
 - name: Deteccion de sistema operativo
@@ -93,29 +87,33 @@
 - name: Deteccion de variantes de sistema operativo Linux
   when: os == 'linux'
   block:
+    # %%%%%%%%%%%%%%%%%%%%%%%%%% Family Debian %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #
     - name: Ubuntu
       ansible.builtin.set_fact:
         os_vendor: ubuntu
       when: ansible_distribution == 'Ubuntu'
 
     - name: Debian
-      set_fact: 
+      ansible.builtin.set_fact:
         os_vendor: debian
       when: ansible_distribution == 'Debian' or
-            ansible_distribution == 'Kali'
+        ansible_distribution == 'Kali'
 
+    # %%%%%%%%%%%%%%%%%%%%%%%%%% Family RedHat %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #
     - name: Amazon Linux
-      set_fact:
-        os_vendor: amazon
+      ansible.builtin.set_fact:
+        os_vendor: rhel
       when: ansible_distribution == 'Amazon'
 
     - name: CentOS
-      set_fact:
-        os_vendor: centos
+      ansible.builtin.set_fact:
+        os_vendor: rhel
       when: ansible_distribution == 'CentOS'
 
     - name: Red Hat Enterprise Linux
-      set_fact:
+      ansible.builtin.set_fact:
         os_vendor: rhel
       when: ansible_distribution == 'RedHat'
 
@@ -126,32 +124,36 @@
 
     - name: Rocky Linux
       ansible.builtin.set_fact:
-        os_vendor: rocky
+        os_vendor: rhel
       when: ansible_distribution == 'Rocky'
 
     - name: Ferdora Linux
       ansible.builtin.set_fact:
-        os_vendor: fedora
+        os_vendor: rhel
       when: ansible_distribution == 'Fedora'
-
-    - name: SUSE Enterprise Linux Server
-      ansible.builtin.set_fact:
-        os_vendor: sles
-      when:
-        ansible_distribution == 'SLES' or
-        ansible_distribution == 'SLES_SAP'
 
     - name: Oracle Linux
       ansible.builtin.set_fact:
-        os_vendor: oracle
-      when:
-        ansible_distribution == 'OracleLinux'
+        os_vendor: rhel
+      when: ansible_distribution == 'OracleLinux'
 
+    # %%%%%%%%%%%%%%%%%%%%%%%%%% Family SuSe %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #
+    - name: SUSE Enterprise Linux Server
+      ansible.builtin.set_fact:
+        os_vendor: sles
+      when: ansible_distribution == 'SLES' or
+        ansible_distribution == 'SLES_SAP'
+
+    # %%%%%%%%%%%%%%%%%%%%%%%%%% Family Solaris %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #
     - name: Solaris Unix
       ansible.builtin.set_fact:
         os_vendor: solaris
-      when:
-        ansible_distribution == 'Solaris'
+      when: ansible_distribution == 'Solaris'
+
+    # %%%%%%%%%%%%%%%%%%%%%%%%%% END Family OS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #
 
     - name: Verificar si existe /etc/os-release
       ansible.builtin.stat:
@@ -167,7 +169,9 @@
       when: osrelease_file.stat.exists
       block:
         - name: Obtener version de distribucion Linux
-          ansible.builtin.shell: grep -w "VERSION_ID" /etc/os-release | cut -d = -f 2 | tr -d '"'
+          ansible.builtin.shell: |
+            set -o pipefail
+            grep -w "VERSION_ID" /etc/os-release | cut -d = -f 2 | tr -d '"'
           register: version_id
           changed_when: version_id.rc != 0
 
@@ -176,68 +180,69 @@
             os_release: "{{ version_id.stdout }}"
 
     - name: Verificar distribuciones derivadas de RedHat no basadas en /etc/os-release
-      when:
-        not osrelease_file.stat.exists and
+      when: not osrelease_file.stat.exists and
         redhatrelease_file.stat.exists
       block:
         - name: Obtener release de distribucion Linux
-          ansible.builtin.shell: grep -oE "release ([0-9]\.?)+" /etc/redhat-release | awk '{ print $2 }'
+          ansible.builtin.shell: |
+            set -o pipefail
+            grep -oE "release ([0-9]\.?)+" /etc/redhat-release | awk '{ print $2 }'
           register: redhat_release
+          changed_when: redhat_release.rc != 0
 
         - name: Version de distribucion Linux
-          set_fact:
+          ansible.builtin.set_fact:
             os_release: "{{ redhat_release.stdout }}"
 
     - name: Verificar distribuciones Linux no basadas en /etc/os-release
       when: not osrelease_file.stat.exists
       block:
         - name: Version de distribucion Linux generica
-          set_fact:
+          ansible.builtin.set_fact:
             os_vendor: "Linux generic"
             os_release: "1"
 
     - name: Detectar ubicacion de comando systemctl
-      command: which systemctl
+      ansible.builtin.command: which systemctl
       register: systemctl_result
+      changed_when: systemctl_result.rc != 0
       ignore_errors: true
 
     - name: Definir variable de deteccion de entorno Systemd
-      set_fact:
+      ansible.builtin.set_fact:
         systemd_capable: "{{ 'yes' if systemctl_result.rc == 0 else 'no' }}"
 
 - name: Variable os_maj_release
-  set_fact:
+  ansible.builtin.set_fact:
     os_maj_release: "{{ os_release.split('.')[0] }}"
   when: os == 'linux'
 
 - name: Variable os_base_version
-  set_fact:
+  ansible.builtin.set_fact:
     os_base_version: "{{ os_vendor }}-{{ os_maj_release }}"
   when: os == 'linux'
 
 - name: Agregar variables accesibles globales al host
-  set_fact:
+  ansible.builtin.set_fact:
     smbinst_share: "{{ smbinst_share }}"
     smbinst_user: "{{ smbinst_user }}"
     smbinst_domain: "{{ smbinst_domain }}"
     smbinst_pass: "{{ smbinst_pass }}"
     firewall_enabled: "{{ firewall_enabled }}"
-    ssh_password_authentication: "{{ssh_password_authentication}}"
-    ssh_permit_root_login: "{{ssh_permit_root_login}}"
+    ssh_password_authentication: "{{ ssh_password_authentication }}"
+    ssh_permit_root_login: "{{ ssh_permit_root_login }}"
 
 - name: Ajustar valores de SSH para cloud
-  set_fact:
+  ansible.builtin.set_fact:
     ssh_password_authentication: "no"
     ssh_permit_root_login: "no"
-  when:
-    hypervisor is defined and
+  when: hypervisor is defined and
     (hypervisor == 'aws' or
     hypervisor == 'azure')
-
-#- name: Definir interprete de Python a usar
-#  set_fact:
-#    ansible_python_interpreter: /usr/bin/python3
-#  when:
-#    os_vendor is defined and
-#    (os_vendor in ['rhel','centos','oracle']) and
-#    (os_maj_release | int >= 8)
+# - name: Definir interprete de Python a usar
+#   set_fact:
+#     ansible_python_interpreter: /usr/bin/python3
+#   when:
+#     os_vendor is defined and
+#     (os_vendor in ['rhel','centos','oracle']) and
+#     (os_maj_release | int >= 8)

@@ -1,38 +1,7 @@
 ---
-- name: Check subscription for RedHat
-  when:
-    - os_vendor == 'rhel'
-  ansible.builtin.shell: |
-    set -o pipefail
-    subscription-manager list |grep -iE ^status\:[[:blank:]]+|tr -d " " | awk -F ":" '{print $2}'
-  register: subscription_status
-  changed_when: subscription_status.rc != 0
-  environment:
-    http_proxy: "{{ proxy | default(omit) }}"
-    https_proxy: "{{ proxy | default(omit) }}"
-
-- name: Configure satellite server
-  when:
-    - os_vendor == 'rhel'
-    - client == "Positiva"
-  ansible.builtin.include_tasks: configure_repo_rhel.yml
-
-- name: Registry of Red Hat Enterprise Linux Server
-  community.general.redhat_subscription:
-    username: "{{ os_register_username }}"
-    password: "{{ os_register_password }}"
-    auto_attach: true
-    force_register: true
-  when:
-    - os_vendor == 'rhel'
-    - subscription_status.stdout in ["Not Registered", "Unknown", "NotSubscribed", "Not Subscribed"]
-    - os_register_username is defined
-    - os_register_username|length > 0
-    - os_register_password is defined
-    - os_register_password|length >0
-  environment:
-    http_proxy: "{{ proxy | default(omit) }}"
-    https_proxy: "{{ proxy | default(omit) }}"
+- name: Include the os system
+  ansible.builtin.include_tasks:
+    file: os_{{ os_vendor }}.yml
 
 - name: Check subscription for SuSe not client ACEROS
   when: os_vendor == 'sles'
@@ -45,7 +14,7 @@
 
     - name: Save status of register in value
       ansible.builtin.set_fact:
-       suseconnect_status: "{{ suse_connect_result.stdout | from_json | json_query('[*].status') | first if suse_connect_result.rc == 0 else 'Not Registered' }}"
+        suseconnect_status: "{{ suse_connect_result.stdout | from_json | json_query('[*].status') | first if suse_connect_result.rc == 0 else 'Not Registered' }}"
       environment:
         http_proxy: "{{ proxy | default(omit) }}"
         https_proxy: "{{ proxy | default(omit) }}"

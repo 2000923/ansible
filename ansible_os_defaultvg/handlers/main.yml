@@ -1,9 +1,14 @@
-- name: restart sshd
-  service:
+- name: Restart sshd
+  ansible.builtin.service:
     name: sshd
     state: restarted
 
-- name: start cockpit
-  service:
+- name: Start cockpit
+  ansible.builtin.service:
     name: cockpit
     state: started
+
+- name: Reboot if SELinux is changed
+  ansible.builtin.reboot:
+    reboot_timeout: 3600
+  when: selinux_disabled.changed == yes

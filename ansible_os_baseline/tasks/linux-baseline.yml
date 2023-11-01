@@ -1,57 +1,53 @@
 ---
 - name: Update package cache repository from OS (RedHat)
   when:
-    - os_vendor == "rhel" or os_vendor == "oracle" or os_vendor == "centos" or os_vendor == "rocky"
-  command:
-    cmd: "yum makecache"
-  environment:
-    http_proxy: "{{ proxy | default(omit) }}"
-    https_proxy: "{{ proxy | default(omit) }}"
+    - os_vendor == "redhat"
+  ansible.builtin.yum:
+    update_cache: true
   register: check_yum
+  changed_when: check_yum.rc != 0
 
-- name: Update package cache (Zypper only)
+- name: Update package cache for Zypper only
   when: os_vendor == "sles"
-  command:
+  ansible.builtin.command:
     cmd: "zypper refresh"
-    warn: false
-  environment:
-    http_proxy: "{{ proxy | default(omit) }}"
-    https_proxy: "{{ proxy | default(omit) }}"
   register: check_zypper
+  changed_when: check_zypper.rc != 0
 
 - name: Update package cache (Debian Family only)
   when: os_vendor == "ubuntu" or os_vendor == "debian" or os_vendor == "kali"
-  command:
+  ansible.builtin.command:
     cmd: "apt update"
-  environment:
-    http_proxy: "{{ proxy | default(omit) }}"
-    https_proxy: "{{ proxy | default(omit) }}"
   register: check_apt
+  changed_when: check_apt.rc != 0
 
-- when:
+- name: Check the value check_apt is defined
+  when:
     - check_apt.rc is defined
-  set_fact:
+  ansible.builtin.set_fact:
     install_pkg: "{{ true if check_apt.rc == 0 else false }}"
 
-- when:
+- name: Check the value check_yum is defined
+  when:
     - check_yum.rc is defined
-  set_fact:
+  ansible.builtin.set_fact:
     install_pkg: "{{ true if check_yum.rc == 0 else false }}"
 
-- when:
+- name: Check the check_zypper value is defined
+  when:
     - check_zypper.rc is defined
-  set_fact:
+  ansible.builtin.set_fact:
     install_pkg: "{{ true if check_zypper.rc == 0 else false }}"
 
-- when:
+- name: Install packages to Operative System
+  when:
     - install_pkg == true
   block:
-    - name: include prerequisites to SO new
-      include_tasks: linux-prerequisites.yml
-      ignore_errors: true
+    - name: Include prerequisites to SO new
+      ansible.builtin.include_tasks: linux-prerequisites.yml
 
     - name: Install generic package in redhat/debian/sles
-      package:
+      ansible.builtin.package:
         name: "{{ item }}"
         state: present
       loop: "{{ linux_generic_all_packages }}"
@@ -60,91 +56,86 @@
         https_proxy: "{{ proxy | default(omit) }}"
 
     - name: Instalar software de Red Hat/CentOS
-      include_tasks: linux-redhat-software-installation.yml
+      ansible.builtin.include_tasks: linux-redhat-software-installation.yml
       when: (os_vendor == 'centos' or
         os_vendor == 'rhel' or
         os_vendor == 'oracle' or
         os_vendor == 'rocky')
 
     - name: Instalar software de Debian/Ubuntu
-      include_tasks: linux-debian-software-installation.yml
+      ansible.builtin.include_tasks: linux-debian-software-installation.yml
       when: os_vendor == 'ubuntu' or
         os_vendor == 'debian'
 
     - name: Instalar software de SUSE
-      include_tasks: linux-suse-software-installation.yml
+      ansible.builtin.include_tasks: linux-suse-software-installation.yml
       when: os_vendor == 'sles'
 
     - name: Instalar software de Amazon
-      include_tasks: linux-amazon-software-installation.yml
+      ansible.builtin.include_tasks: linux-amazon-software-installation.yml
       when: (os_vendor == 'amazon' and os_release != '2')
 
     - name: Instalar software de Amazon 2
-      include_tasks: linux-amazon2-software-installation.yml
+      ansible.builtin.include_tasks: linux-amazon2-software-installation.yml
       when: (os_vendor == 'amazon' and os_release == '2')
 
     - name: Habilitar servicio atd
-      service:
+      ansible.builtin.service:
         name: atd
         state: started
-        enabled: yes
+        enabled: true
 
 - name: Configurar SSH - Deshabilitar consultas DNS
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: "^UseDNS"
+    regexp: "^UseDNS.*"
     line: "UseDNS no"
 
 - name: Configurar SSH - Ajustes de keepalive 1
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "^ClientAliveInterval"
     line: "ClientAliveInterval 30"
 
-- name: "change password authentication of no/yes"
-  lineinfile:
+- name: Change password authentication of no/yes
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "^#?PasswordAuthentication(.*)no"
     line: "PasswordAuthentication yes"
 
 - name: Configurar SSH - Ajustes de keepalive 2
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "^ClientAliveCountMax"
     line: "ClientAliveCountMax 5"
   notify:
     - restart sshd
 
-- name: Deshabilitar SELinux|
-  selinux:
+- name: Deshabilitar SELinux
+  ansible.posix.selinux:
     state: disabled
-  when: os_vendor == 'centos' or
-    os_vendor == 'oracle' or
-    os_vendor == 'rhel' or
-    os_vendor == 'rocky' or
-    (os_vendor == 'amazon' and
-    os_release == '2') and
-    selinux_disabled == true
+  when:
+    - os_vendor == "rhel"
+    - selinux == false
 
 - name: Personalizacion de parametros de kernel en RHEL/CentOS
-  when: (os_vendor == 'centos' or
-    os_vendor == 'rhel' or
-    os_vendor == 'oracle' or
-    os_vendor == 'rocky') and
-    os_release.split('.')[0] == '7'
+  when:
+    - os_vendor == 'rhel'
+    - os_release.split('.')[0] == '7'
   block:
     - name: Remover parametros rhgb y quiet en RHEL/CentOS
-      replace:
+      ansible.builtin.replace:
         path: /etc/default/grub
         regexp: "rhgb|quiet"
       register: edit_grub
 
     - name: Regenerar configuracion de grub
-      shell: |
+      ansible.builtin.shell: |
+        set -o pipefail
         grub2-mkconfig -o /boot/grub2/grub.cfg
       register: reconf_grub
-      when: edit_grub.changed
+      when: edit_grub.changed_when
 
 - name: Configurar zona horaria a America/Lima
-  timezone:
+  community.general.timezone:
     name: America/Lima
