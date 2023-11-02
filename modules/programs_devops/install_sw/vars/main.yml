@@ -36,3 +36,7 @@ hashicorp_url_gpg: "https://apt.releases.hashicorp.com/gpg"
 oracle_url_gpg: "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
 docker_url_gpg: "https://download.docker.com/linux/ubuntu/gpg"
 nodejs_url_gpg: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+
+# %%%%%%%%%%%%%%%% clipgrap url %%%%%%%%%%%%%%%%%%
+clipgrap_url: "https://download.clipgrab.org/clipgrab-3.9.7.tar.gz"
+keepassxc_url: "https://ppa.launchpadcontent.net/phoerious/keepassxc/ubuntu/"

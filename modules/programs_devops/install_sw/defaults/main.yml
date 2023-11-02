@@ -29,6 +29,8 @@ base_packages:
   - flameshot
   - fontconfig
   - gimp
+  - gnome-calendar
+  - gnome-online-accounts
   - gnome-remote-desktop
   - gnome-shell-pomodoro
   - gnupg
@@ -59,6 +61,8 @@ base_packages:
   - obs-studio
   - perl
   - procps
+  - qtbase5-dev
+  - qtwebengine5-dev
   - psmisc
   - ruby-dev
   - rsync

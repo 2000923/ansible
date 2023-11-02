@@ -57,7 +57,7 @@
   ansible.builtin.get_url:
     url: "https://api.inkdrop.app/download/linux/deb"
     dest: /tmp/inkdrop.deb
-    mode: '0644'
+    mode: "0644"
 
 - name: Install the inkdrop deb in the pc
   ansible.builtin.apt:
@@ -81,3 +81,18 @@
   changed_when: fzf_download.rc != 0
   args:
     executable: /bin/bash
+
+- name: Compile Clipgrab
+  ansible.builtin.command:
+    cmd: qmake clipgrab.pro
+  register: cg_pro_compile
+  changed_when: cg_pro_compile.rc != 0
+  args:
+    chdir: /opt/clipgrab
+
+- name: Make the object clipgrab
+  when: cg_pro_compile.rc != 0
+  ansible.builtin.command:
+    cmd: make
+  register: make_clipgrab
+  changed_when: make_clipgrab.rc != 0

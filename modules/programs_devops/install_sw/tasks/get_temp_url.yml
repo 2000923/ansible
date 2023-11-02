@@ -3,7 +3,7 @@
   ansible.builtin.get_url:
     url: "{{ aws_cli_url }}"
     dest: /tmp/awscliv2.zip
-    mode: '0755'
+    mode: "0755"
 
 - name: Unzip awscli2
   ansible.builtin.unarchive:
@@ -15,8 +15,16 @@
   ansible.builtin.get_url:
     url: "{{ discord_url }}"
     dest: /tmp/discord.deb
-    mode: '0755'
+    mode: "0755"
 
+- name: Download clipgrab deb
+  ansible.builtin.get_url:
+    url: "{{ aws_cli_url }}"
+    dest: /opt/clipgrab
+    owner: eflores
+    group: eflores
+    mode: "0755"
+    decompress: true
 # - name: Download thunderbird to ubuntu
 #   ansible.builtin.get_url:
 #     url: "{{ thunderbird_url }}"
