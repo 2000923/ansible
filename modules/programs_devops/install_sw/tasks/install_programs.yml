@@ -1,4 +1,8 @@
 ---
+- name: Run the equivalent of "apt-get update"
+  ansible.builtin.apt:
+    update_cache: true
+
 - name: Pause for 2 minutes to build app cache
   ansible.builtin.pause:
     minutes: 2
@@ -11,10 +15,10 @@
     - "{{ base_packages }}"
     - "{{ packages }}"
 
-- name: Update packages from local
-  ansible.builtin.apt:
-    upgrade: dist
-    force_apt_get: true
+# - name: Update packages from local
+#   ansible.builtin.apt:
+#     upgrade: dist
+#     force_apt_get: true
 
 - name: Install package extras
   ansible.builtin.include_tasks:
@@ -47,30 +51,15 @@
     classic: true
   loop: "{{ snap_packages }}"
 
-- name: Download tarball in the /opt/
-  ansible.builtin.unarchive:
-    src: /tmp/thunderbird.tar.gz
-    dest: /opt/
-    remote_src: true
-
-- name: Download the inkdrop in my own pc
-  ansible.builtin.get_url:
-    url: "https://api.inkdrop.app/download/linux/deb"
-    dest: /tmp/inkdrop.deb
-    mode: "0644"
+# - name: Download tarball in the /opt/
+#   ansible.builtin.unarchive:
+#     src: /tmp/thunderbird.tar.gz
+#     dest: /opt/
+#     remote_src: true
 
 - name: Install the inkdrop deb in the pc
   ansible.builtin.apt:
-    deb: /tmp/discord.deb
-
-- name: Download fzf from repository
-  ansible.builtin.git:
-    repo: https://github.com/junegunn/fzf.git
-    dest: /opt/fzf/
-    clone: true
-    depth: 1
-    single_branch: true
-    version: master
+    deb: /tmp/inkdrop.deb
 
 - name: Run install script for fzf
   ansible.builtin.shell:
@@ -96,3 +85,19 @@
     cmd: make
   register: make_clipgrab
   changed_when: make_clipgrab.rc != 0
+
+- name: Add value to sudoers file
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    insertafter: 'Defaults\suse_pty'
+    line: "Defaults\ttimestamp_type=global"
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Configure cpan into OS
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      cpanm -n install Neovim::ext
+      echo yes | sudo cpan App::cpanminus
+  register: cpan_neovim
+  changed_when: cpan_neovim.rc != 0

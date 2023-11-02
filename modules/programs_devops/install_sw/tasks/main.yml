@@ -1,21 +1,7 @@
 ---
-- name: Capture version of operative system
-  ansible.builtin.set_fact:
-    os_version: "{{ ansible_distribution_version }}"
-
-- name: Define python program
-  ansible.builtin.command:
-    cmd: which python3
-  register: find_python
-  changed_when: find_python.rc != 0
-
-- name: Set value python_program
-  ansible.builtin.set_fact:
-    python_program: "{{ find_python.stdout }}"
-
-- name: Capture user from remote server
-  ansible.builtin.set_fact:
-    os_user: "{{ ansible_env.SUDO_USER }}"
+- name: Up base vars values
+  ansible.builtin.include_tasks:
+    file: set_values.yml
 
 - name: Restart the time ntp
   when: 1 == 2
@@ -48,73 +34,18 @@
   ansible.builtin.include_tasks:
     file: configure_repo.yml
 
-- name: Run the equivalent of "apt-get update"
-  ansible.builtin.apt:
-    update_cache: true
-
 - name: Install package extras
   ansible.builtin.include_tasks:
     file: install_programs.yml
 
-- name: Install package extras
+- name: Configure firewall in local
   ansible.builtin.include_tasks:
     file: configure_firewall.yml
 
-- name: Change shell to my user
-  ansible.builtin.shell: |
-    set -o pipefail
-    usermod -s /usr/bin/fish "{{ os_user }}"
-  register: user_fish
-  changed_when: user_fish.rc != 0
-  args:
-    executable: /bin/bash
-
-- name: Configure the tflint
-  ansible.builtin.shell: |
-    set -o pipefail
-    curl -s "{{ tflint_url }}" | bash
-  register: nerd_fonts_1
-  changed_when: nerd_fonts_1.rc != 0
-  args:
-    chdir: /tmp
-    executable: /bin/bash
-
-- name: Install plugins for nvim with sudo
-  community.general.npm:
-    name: "{{ item }}"
-    global: true
-  loop: "{{ npm_packages_sudo }}"
+- name: Configure enviroment with permise of root
+  ansible.builtin.include_tasks:
+    file: configure_enviroment.yml
 
 - name: Configure Users
   ansible.builtin.include_tasks:
     file: configure_users.yml
-
-- name: Up values for private vars
-  ansible.builtin.include_vars:
-    file: ../vars/private.yml
-
-- name: Register ubuntu pro for updates
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      sudo pro attach "{{ token_pro_ubuntu }}"
-  register: token_pro
-  changed_when: token_pro.rc != 0
-  args:
-    executable: /bin/bash
-
-- name: Add value to sudoers file
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    insertafter: 'Defaults\suse_pty'
-    line: "Defaults\ttimestamp_type=global"
-    validate: /usr/sbin/visudo -cf %s
-
-- name: configure cpan into OS
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      cpanm -n install Neovim::ext
-      echo yes | sudo cpan App::cpanminus
-  register: cpan_neovim
-  changed_when: cpan_neovim.rc != 0

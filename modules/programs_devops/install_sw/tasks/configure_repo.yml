@@ -108,4 +108,4 @@
 - name: Add respository for Save Record the desktop
   ansible.builtin.apt_repository:
     repo: "ppa:obsproject/obs-studio"
-    codename: jammy
+    codename: "{{ ansible_distribution_release }}"

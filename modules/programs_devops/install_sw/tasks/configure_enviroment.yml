@@ -1,0 +1,25 @@
+---
+- name: Change shell to my user
+  ansible.builtin.shell: |
+    set -o pipefail
+    usermod -s /usr/bin/fish "{{ os_user }}"
+  register: user_fish
+  changed_when: user_fish.rc != 0
+  args:
+    executable: /bin/bash
+
+- name: Configure the tflint
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -s "{{ tflint_url }}" | bash
+  register: nerd_fonts_1
+  changed_when: nerd_fonts_1.rc != 0
+  args:
+    chdir: /tmp
+    executable: /bin/bash
+
+- name: Install plugins for nvim with sudo
+  community.general.npm:
+    name: "{{ item }}"
+    global: true
+  loop: "{{ npm_packages_sudo }}"

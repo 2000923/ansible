@@ -19,12 +19,27 @@
 
 - name: Download clipgrab deb
   ansible.builtin.get_url:
-    url: "{{ aws_cli_url }}"
+    url: "{{ clipgrab_url }}"
     dest: /opt/clipgrab
-    owner: eflores
-    group: eflores
+    owner: "{{ os_user }}"
+    group: "{{ os_user }}"
     mode: "0755"
     decompress: true
+
+- name: Download the inkdrop in my own pc
+  ansible.builtin.get_url:
+    url: "https://api.inkdrop.app/download/linux/deb"
+    dest: /tmp/inkdrop.deb
+    mode: "0644"
+
+- name: Download fzf from repository
+  ansible.builtin.git:
+    repo: https://github.com/junegunn/fzf.git
+    dest: /opt/fzf/
+    clone: true
+    depth: 1
+    single_branch: true
+    version: master
 # - name: Download thunderbird to ubuntu
 #   ansible.builtin.get_url:
 #     url: "{{ thunderbird_url }}"
