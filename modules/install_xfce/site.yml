@@ -1,0 +1,19 @@
+---
+- name: Install desktop in remote server
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    package:
+      - xfce4-goodies
+      - xfce4
+  tasks:
+    - name: Install xfce
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ package }}"
+
+    - name: Reboot Server
+      ansible.builtin.reboot:
+        reboot_timeout: 300

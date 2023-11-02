@@ -1,5 +1,6 @@
 ---
 - name: Include the os system
+  when: os_vendor == 'rhel'
   ansible.builtin.include_tasks:
     file: os_{{ os_vendor }}.yml
 
@@ -14,7 +15,9 @@
 
     - name: Save status of register in value
       ansible.builtin.set_fact:
-        suseconnect_status: "{{ suse_connect_result.stdout | from_json | json_query('[*].status') | first if suse_connect_result.rc == 0 else 'Not Registered' }}"
+        suseconnect_status:
+          "{{ suse_connect_result.stdout | from_json | json_query('[*].status') \
+          | first if suse_connect_result.rc == 0 else 'Not Registered' }}"
       environment:
         http_proxy: "{{ proxy | default(omit) }}"
         https_proxy: "{{ proxy | default(omit) }}"

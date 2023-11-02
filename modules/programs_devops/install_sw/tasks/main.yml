@@ -3,6 +3,16 @@
   ansible.builtin.set_fact:
     os_version: "{{ ansible_distribution_version }}"
 
+- name: Define python program
+  ansible.builtin.command:
+    cmd: which python3
+  register: find_python
+  changed_when: find_python.rc != 0
+
+- name: Set value python_program
+  ansible.builtin.set_fact:
+    python_program: "{{ find_python.stdout }}"
+
 - name: Capture user from remote server
   ansible.builtin.set_fact:
     os_user: "{{ ansible_env.SUDO_USER }}"
@@ -99,3 +109,12 @@
     insertafter: 'Defaults\suse_pty'
     line: "Defaults\ttimestamp_type=global"
     validate: /usr/sbin/visudo -cf %s
+
+- name: configure cpan into OS
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      cpanm -n install Neovim::ext
+      echo yes | sudo cpan App::cpanminus
+  register: cpan_neovim
+  changed_when: cpan_neovim.rc != 0

@@ -32,6 +32,7 @@ base_packages:
   - gnome-remote-desktop
   - gnome-shell-pomodoro
   - gnupg
+  - hfsprogs
   - host
   - hunspell-es
   - iftop
@@ -111,13 +112,14 @@ packages:
   - docker-buildx-plugin
   - docker-compose-plugin
   - exa
- # - fd-find
+  # - fd-find
   - fzf
   - gem
   - gh
   - git
   - hfsplus
   - hfsutils
+  - jq
   - lua5.4
   - lua-nvim
   - ninja-build

@@ -5,6 +5,8 @@
     echo "root:password" | chpasswd
   register: root_password
   changed_when: root_password.rc != 0
+  args:
+    executable: /bin/bash
 
 - name: Create groups administrator
   ansible.builtin.group:
@@ -128,13 +130,14 @@
     regexp: "XKBLAYOUT=*"
     line: 'XKBLAYOUT="es"'
   register: change_keyboard
+  notify: Execute setupcon
 
-- name: If change keyboard is true
-  when: change_keyboard.changed == true
-  ansible.builtin.command: |
-    setupcon
-  register: setupcon_rst
-  changed_when: setupcon_rst.rc != 0
+#  - name: If change keyboard is true
+#    when: change_keyboard.changed == true
+#    ansible.builtin.command: |
+#      setupcon
+#    register: setupcon_rst
+#    changed_when: setupcon_rst.rc != 0
 
 - name: Change enviroment in rhel
   when: os_vendor == 'rhel'

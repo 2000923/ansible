@@ -23,30 +23,35 @@
         groups: ["subsonic"]
         append: true
         create_home: true
-        home: /opt/subsonic
+        home: /var/subsonic
         shell: /bin/bash
 
     - name: Download the package for the distribution
       when: ansible_os_family == "Debian"
-      ansible.builtin.get_url:
-        url: https://s3-eu-west-1.amazonaws.com/subsonic-public/download/subsonic-{{ version }}.deb
-        dest: /tmp
-        owner: root
-        group: root
-        mode: "0600"
-
-    - name: Install package in local compute
       ansible.builtin.apt:
-        deb: file=/tmp/subsonic-{{ version }}.deb
+        deb: https://s3-eu-west-1.amazonaws.com/subsonic-public/download/subsonic-{{ version }}.deb
         state: present
 
-    - name: Pause to get some sensitive input
-      ansible.builtin.pause:
-        prompt: "Enter a secret"
-        echo: true
+    - name: Change the user for subsonic
+      ansible.builtin.lineinfile:
+        path: /etc/default/subsonic
+        regexp: "SUBSONIC_USER=root"
+        line: "SUBSONIC_USER=subsonic"
+      notify: restarted subsonic
 
-    - name: Start and enable Subsonic service
+    - name: Create directory for mount music and movies
+      ansible.builtin.file:
+        path: /var/{{ item }}
+        mode: "0755"
+        owner: subsonic
+        group: subsonic
+      loop:
+        - music
+        - movie
+
+  handlers:
+    - name: restarted subsonic
       ansible.builtin.systemd:
         name: subsonic
-        state: started
+        state: restarted
         enabled: true
