@@ -57,6 +57,7 @@
         src: /tmp/ansible-examples/.config/
         dest: ~/.config/.
         mode: "0755"
+        remote_src: "{{ true if local is not defined else false }}"
 
     - name: Clone a repo the packer nvim in my local
       ansible.builtin.git:
@@ -75,7 +76,7 @@
     - name: Install plugins for nvim
       community.general.npm:
         name: "{{ item }}"
-        # path: /home/eflores/
+        path: /home/{{ os_user }}
         global: false
       loop: "{{ npm_packages }}"
 

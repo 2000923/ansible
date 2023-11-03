@@ -1,0 +1,4 @@
+---
+- name: Reboot server before update
+  ansible.builtin.reboot:
+    reboot_timeout: 300

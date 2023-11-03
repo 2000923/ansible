@@ -20,11 +20,29 @@
 - name: Download clipgrab deb
   ansible.builtin.get_url:
     url: "{{ clipgrab_url }}"
-    dest: /opt/clipgrab
-    owner: "{{ os_user }}"
-    group: "{{ os_user }}"
+    dest: /tmp/
     mode: "0755"
-    decompress: true
+  register: clipgrab_file
+
+- name: Unarchive for file Download
+  ansible.builtin.unarchive:
+    src: "{{ clipgrab_file.dest }}"
+    dest: /opt
+    owner: "{{ os_user }}"
+    group: users
+    mode: "755"
+
+- name: Define new value
+  ansible.builtin.set_fact:
+    clipgrab_file: "{{ clipgrab_file.dest | regex_replace('\\.tar\\.gz','') | regex_replace('\\/.*\\/','') }}"
+
+- name: Change name directory
+  ansible.builtin.command:
+    cmd: mv -v {{ clipgrab_file }} clipgrab
+  register: mv_clipgrab
+  changed_when: mv_clipgrab.rc != 0
+  args:
+    chdir: /opt
 
 - name: Download the inkdrop in my own pc
   ansible.builtin.get_url:

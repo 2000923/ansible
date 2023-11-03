@@ -3,38 +3,17 @@
   ansible.builtin.include_tasks:
     file: set_values.yml
 
-- name: Restart the time ntp
-  when: 1 == 2
-  ansible.builtin.service:
-    name: "systemd-timesyncd"
-    state: restarted
-
-- name: Kill process apt
-  when: 1 == 2
-  ansible.builtin.command:
-    cmd: pkill -f apt
-  register: cmd_kill
-  changed_when: cmd_kill.rc != 0
-
-# Assigned values to architecture
-- name: Capture deb-architecture of Operating System
-  ansible.builtin.command: dpkg --print-architecture
-  register: dpkg_architecture
-  changed_when: dpkg_architecture.rc != 0
-
-# Create directories
-- name: Create directory for /etc/apt/keyring
-  ansible.builtin.file:
-    path: /etc/apt/keyrings
-    state: directory
-    mode: "0755"
+# Personalice the os with values defect
+- name: Personalice the os
+  ansible.builtin.include_tasks:
+    file: personalice_so.yml
 
 # include task to configure repositories
 - name: Configure repositories
   ansible.builtin.include_tasks:
     file: configure_repo.yml
 
-- name: Install package extras
+- name: Install packages
   ansible.builtin.include_tasks:
     file: install_programs.yml
 
@@ -49,3 +28,9 @@
 - name: Configure Users
   ansible.builtin.include_tasks:
     file: configure_users.yml
+
+- name: Upgrade SO
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+  notify: Reboot server before uptade

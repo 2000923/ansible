@@ -51,11 +51,11 @@
     classic: true
   loop: "{{ snap_packages }}"
 
-# - name: Download tarball in the /opt/
-#   ansible.builtin.unarchive:
-#     src: /tmp/thunderbird.tar.gz
-#     dest: /opt/
-#     remote_src: true
+- name: Download tarball in the /opt/
+  ansible.builtin.unarchive:
+    src: /tmp/thunderbird.tar.gz
+    dest: /opt/
+    remote_src: true
 
 - name: Install the inkdrop deb in the pc
   ansible.builtin.apt:
@@ -71,6 +71,8 @@
   args:
     executable: /bin/bash
 
+# %%%%%%%%%%%%%%%%%%%%%%%%%%% Install clipgrab %%%%%%%%%%%%%%%%%%%%%%%%%
+
 - name: Compile Clipgrab
   ansible.builtin.command:
     cmd: qmake clipgrab.pro
@@ -79,19 +81,33 @@
   args:
     chdir: /opt/clipgrab
 
+- name: debug
+  ansible.builtin.debug:
+    var: cg_pro_compile
+
 - name: Make the object clipgrab
-  when: cg_pro_compile.rc != 0
+  when: cg_pro_compile.rc == 0
   ansible.builtin.command:
     cmd: make
   register: make_clipgrab
   changed_when: make_clipgrab.rc != 0
+  args:
+    chdir: /opt/clipgrab
 
-- name: Add value to sudoers file
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    insertafter: 'Defaults\suse_pty'
-    line: "Defaults\ttimestamp_type=global"
-    validate: /usr/sbin/visudo -cf %s
+- name: Link to clipgrab for /usr/local/bin
+  ansible.builtin.file:
+    src: /opt/clipgrab/clipgrab
+    dest: /usr/local/bin/clipgrab
+    owner: root
+    group: root
+    mode: "0755"
+    state: link
+
+- name: Install plugins for nvim with sudo
+  community.general.npm:
+    name: "{{ item }}"
+    global: true
+  loop: "{{ npm_packages_sudo }}"
 
 - name: Configure cpan into OS
   ansible.builtin.shell:
@@ -101,3 +117,5 @@
       echo yes | sudo cpan App::cpanminus
   register: cpan_neovim
   changed_when: cpan_neovim.rc != 0
+  args:
+    executable: /bin/bash

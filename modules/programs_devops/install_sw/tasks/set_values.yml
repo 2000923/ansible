@@ -1,13 +1,7 @@
 ---
-- name: Register ubuntu pro for updates
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      sudo pro attach "{{ token_pro_ubuntu }}"
-  register: token_pro
-  changed_when: token_pro.rc != 0
-  args:
-    executable: /bin/bash
+- name: Up values for private vars
+  ansible.builtin.include_vars:
+    file: ../vars/private.yml
 
 - name: Capture version of operative system
   ansible.builtin.set_fact:
@@ -26,7 +20,12 @@
 - name: Capture user from remote server
   ansible.builtin.set_fact:
     os_user: "{{ ansible_env.SUDO_USER }}"
-
-- name: Up values for private vars
-  ansible.builtin.include_vars:
-    file: ../vars/private.yml
+# - name: Register ubuntu pro for updates
+#   ansible.builtin.shell:
+#     cmd: |
+#       set -o pipefail
+#       sudo pro attach "{{ token_pro_ubuntu }}"
+#   register: token_pro
+#   changed_when: token_pro.rc != 0
+#   args:
+#     executable: /bin/bash
