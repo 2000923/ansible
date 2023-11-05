@@ -51,11 +51,11 @@
     classic: true
   loop: "{{ snap_packages }}"
 
-- name: Download tarball in the /opt/
-  ansible.builtin.unarchive:
-    src: /tmp/thunderbird.tar.gz
-    dest: /opt/
-    remote_src: true
+# - name: Download tarball in the /opt/
+#   ansible.builtin.unarchive:
+#     src: /tmp/thunderbird.tar.gz
+#     dest: /opt/
+#     remote_src: true
 
 - name: Install the inkdrop deb in the pc
   ansible.builtin.apt:
@@ -80,10 +80,6 @@
   changed_when: cg_pro_compile.rc != 0
   args:
     chdir: /opt/clipgrab
-
-- name: debug
-  ansible.builtin.debug:
-    var: cg_pro_compile
 
 - name: Make the object clipgrab
   when: cg_pro_compile.rc == 0

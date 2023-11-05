@@ -29,6 +29,10 @@
   ansible.builtin.include_tasks:
     file: configure_users.yml
 
+- name: Configure servers for autocomplete
+  ansible.builtin.include_tasks:
+    file: configure_programs.yml
+
 - name: Upgrade SO
   ansible.builtin.apt:
     name: "*"

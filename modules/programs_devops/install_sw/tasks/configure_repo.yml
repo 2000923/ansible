@@ -77,7 +77,7 @@
   ansible.builtin.apt_repository:
     repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/etc/apt/trusted.gpg.d/microsoft.asc] {{ az_url_cli }} {{ ansible_distribution_release }} main"
 
-# %%%%%%%%%%%%%%%%%%%%%% configure repo visual code %%%%%%%%%%%%%%%%%
+## %%%%%%%%%%%%%%%%%%%%%% configure repo visual code %%%%%%%%%%%%%%%%%
 - name: Download and install VSCode GPG key
   ansible.builtin.apt_key:
     url: https://packages.microsoft.com/keys/microsoft.asc

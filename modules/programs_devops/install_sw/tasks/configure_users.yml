@@ -133,6 +133,10 @@
       loop:
         - ansible.posix
         - community.general
+      args:
+        executable: /usr/bin/fish
+      environment:
+        path: "/home/{{ os_user }}/.local/bin:{{ ansible_env.PATH }}"
 
     - name: Install neovim with gem
       ansible.builtin.command:
@@ -140,10 +144,6 @@
       register: gem_packages
       changed_when: gem_packages.rc != 0
       become: true
-
-    - name: Configure servers for autocomplete
-      ansible.builtin.include_tasks:
-        file: configure_programs.yml
 
     - name: Execute the packer install for plugins
       ansible.builtin.raw: |
