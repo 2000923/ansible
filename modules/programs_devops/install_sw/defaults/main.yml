@@ -159,7 +159,6 @@ npm_packages_sudo:
   - neovim
 
 fisher_packages:
-  - patrickf1/fzf.fish
   - jethrokuan/z
 
 pip_packages:

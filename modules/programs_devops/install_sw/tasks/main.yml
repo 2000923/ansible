@@ -13,6 +13,7 @@
   ansible.builtin.include_tasks:
     file: configure_repo.yml
 
+# Install Packages for Ubuntu and developer
 - name: Install packages
   ansible.builtin.include_tasks:
     file: install_programs.yml
@@ -32,6 +33,24 @@
 - name: Configure servers for autocomplete
   ansible.builtin.include_tasks:
     file: configure_programs.yml
+
+- name: Debug enviroment
+  ansible.builtin.debug:
+    var: ansible_env
+
+- name: Add collection community general
+  ansible.builtin.shell:
+    cmd: ansible-galaxy collection install "{{ item }}"
+  register: community_general
+  become: false
+  changed_when: community_general.rc != 0
+  loop:
+    - ansible.posix
+    - community.general
+  args:
+    executable: /usr/bin/fish
+  environment:
+    path: "/home/{{ os_user }}/.local/bin:{{ ansible_env.PATH }}"
 
 - name: Upgrade SO
   ansible.builtin.apt:

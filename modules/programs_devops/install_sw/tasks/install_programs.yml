@@ -15,11 +15,6 @@
     - "{{ base_packages }}"
     - "{{ packages }}"
 
-# - name: Update packages from local
-#   ansible.builtin.apt:
-#     upgrade: dist
-#     force_apt_get: true
-
 - name: Install package extras
   ansible.builtin.include_tasks:
     file: get_temp_url.yml
@@ -113,5 +108,15 @@
       echo yes | sudo cpan App::cpanminus
   register: cpan_neovim
   changed_when: cpan_neovim.rc != 0
+  args:
+    executable: /bin/bash
+
+- name: Install extension pack from local
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      echo y | VBoxManage extpack install /tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ extension_vb.stdout }}.vbox-extpack
+  register: vbox_extension
+  changed_when: vbox_extension.rc != 0
   args:
     executable: /bin/bash

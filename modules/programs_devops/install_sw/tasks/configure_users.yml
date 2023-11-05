@@ -73,6 +73,13 @@
         line: 'alias ll "exa -l -g --icons -a -s modified -h"'
         state: present
 
+    #    - name: Comment the value in file
+    #      ansible.builtin.lineinfile:
+    #        path: ~/.config/fish/functions/fish_user_key_bindings.fish
+    #        regexp: '(^fzf_configure_bindings.*)'
+    #        replace: '# \1'
+    #        mode: "0644"
+
     - name: Install plugins for nvim
       community.general.npm:
         name: "{{ item }}"
@@ -117,6 +124,16 @@
       args:
         executable: /usr/bin/fish
 
+    - name: Install patrickf1/fzf.fish
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          fisher install patrickf1/fzf.fish
+      register: patrickf1
+      changed_when: patrickf1.rc !=0
+      args:
+        executable: /usr/bin/fish
+
     - name: Update install fisher
       ansible.builtin.shell: |
         fisher update
@@ -124,19 +141,6 @@
       changed_when: fisher_update.rc != 0
       args:
         executable: /usr/bin/fish
-
-    - name: Add collection community general
-      ansible.builtin.command:
-        cmd: ansible-galaxy collection install "{{ item }}"
-      register: community_general
-      changed_when: community_general.rc != 0
-      loop:
-        - ansible.posix
-        - community.general
-      args:
-        executable: /usr/bin/fish
-      environment:
-        path: "/home/{{ os_user }}/.local/bin:{{ ansible_env.PATH }}"
 
     - name: Install neovim with gem
       ansible.builtin.command:
@@ -175,41 +179,18 @@
       register: shellcheck
       changed_when: shellcheck.rc != 0
 
-    - name: Configure Virtualbox for extensions
-      ansible.builtin.shell: |
-        set -o pipefail
-        vboxmanage -v|grep --color -Eo "([[:digit:]]\.?)+"|head -n 1
-      register: extension_vb
-      changed_when: extension_vb.rc != 0
-      args:
-        executable: /bin/bash
-
-    - name: Download extension for repository
-      ansible.builtin.get_url:
-        url: "{{ virtualbox_extension_url }}"
-        dest: /tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ extension_vb.stdout }}.vbox-extpack
-        mode: "0644"
-
-    - name: Install extension pack from local
-      ansible.builtin.shell:
-        cmd: |
-          set -o pipefail
-          echo y | VBoxManage extpack install /tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ extension_vb.stdout }}.vbox-extpack
-      register: vbox_extension
-      changed_when: vbox_extension.rc != 0
-      args:
-        executable: /bin/bash
-
     - name: Create the directory to save ansible.cfg file
       ansible.builtin.file:
         path: "~/data"
+        state: directory
         mode: "0755"
 
-    - name: Personalice the ansible-galaxy
-      ansible.builtin.get_url:
-        url: "https://pastebin.com/dl/VAM1ATb7"
-        dest: "~/data/ansible.cfg"
-        mode: "0700"
+    - name: Copy file ansible.j2 template
+      ansible.builtin.template:
+        src: ansible.j2
+        dest: ~/data/ansible.cfg
+        owner: "{{ os_user }}"
+        mode: "0644"
 
     - name: Configure cpan module
       ansible.builtin.command:
@@ -223,3 +204,5 @@
           cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
       register: cpan_local_lib
       changed_when: cpan_local_lib.rc != 0
+      args:
+        executable: /bin/bash
