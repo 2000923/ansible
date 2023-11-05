@@ -109,7 +109,7 @@
   register: cpan_neovim
   changed_when: cpan_neovim.rc != 0
   args:
-    executable: /bin/bash
+    executable: /usr/bin/fish
 
 - name: Install extension pack from local
   ansible.builtin.shell:

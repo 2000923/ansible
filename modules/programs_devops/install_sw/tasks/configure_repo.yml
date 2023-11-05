@@ -105,6 +105,12 @@
     repo: "deb [signed-by=/etc/apt/trusted.gpg.d/keepassxc.asc] {{ keepassxc_url }} {{ ansible_distribution_release }} main"
 
 # %%%%%%%%%%%%%%%%%%%%%% Configure repo obs-studio %%%%%%%%%%%%%%%%%
+- name: Download and store obs-studio
+  ansible.builtin.get_url:
+    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xbc7345f522079769f5bbe987efc71127f425e228
+    dest: /etc/apt/trusted.gpg.d/obs-studio
+    mode: "0644"
+
 - name: Add respository for Save Record the desktop
   ansible.builtin.apt_repository:
     repo: "ppa:obsproject/obs-studio"

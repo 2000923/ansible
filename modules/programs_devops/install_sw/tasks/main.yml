@@ -34,10 +34,6 @@
   ansible.builtin.include_tasks:
     file: configure_programs.yml
 
-- name: Debug enviroment
-  ansible.builtin.debug:
-    var: ansible_env
-
 - name: Add collection community general
   ansible.builtin.shell:
     cmd: ansible-galaxy collection install "{{ item }}"
@@ -56,4 +52,11 @@
   ansible.builtin.apt:
     name: "*"
     state: latest
-  notify: Reboot server before uptade
+  notify: Reboot server before update
+
+- name: remove files
+  ansible.builtin.file:
+    path: /etc/apt/source.list.d/{{ item }}
+    state: absent
+  loop:
+    - packages_microsoft_com_repos_edge.list

@@ -116,11 +116,9 @@
 
     - name: Install z by fisher
       ansible.builtin.shell: |
-        fisher install {{ item }}
+        fisher install jethrokuan/z
       register: fisher_std
       changed_when: fisher_std.rc != 0
-      loop:
-        - "{{ fisher_packages }}"
       args:
         executable: /usr/bin/fish
 
@@ -172,6 +170,12 @@
         nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shellcheck' -c 'quitall'
       register: shellcheck
       changed_when: shellcheck.rc != 0
+
+    - name: Install mason bash in programs
+      ansible.builtin.raw: |
+        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shell' -c 'quitall'
+      register: shell
+      changed_when: shell.rc != 0
 
     - name: Install tree-sitter bash in programs
       ansible.builtin.raw: |
