@@ -2,15 +2,15 @@
 base_packages:
   # Dev tools
   - build-essential
-  - zlib1g-dev
-  - libncurses5-dev
-  - libgdbm-dev
-  - libnss3-dev
-  - libssl-dev
-  - libreadline-dev
-  - libffi-dev
-  - libsqlite3-dev
   - libbz2-dev
+  - libffi-dev
+  - libgdbm-dev
+  - libncurses5-dev
+  - libnss3-dev
+  - libreadline-dev
+  - libsqlite3-dev
+  - libssl-dev
+  - zlib1g-dev
   # Administration from SO
   - ack
   - at
@@ -24,8 +24,8 @@ base_packages:
   - ethtool
   - exfat-fuse
   - expect
-  - finger
   - filezilla
+  - finger
   - flameshot
   - fontconfig
   - gimp
@@ -36,6 +36,7 @@ base_packages:
   - gnupg
   - hfsprogs
   - host
+  - htop
   - hunspell-es
   - iftop
   - iotop
@@ -152,6 +153,7 @@ npm_packages:
   - "eslint_d"
   - "tree-sitter-cli"
   - "yaml-language-server"
+  - "typescript-language-server"
   - "@ansible/ansible-language-server"
   - "yarn"
 
