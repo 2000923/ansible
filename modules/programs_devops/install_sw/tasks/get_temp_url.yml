@@ -74,6 +74,12 @@
     url: "{{ virtualbox_extension_url }}"
     dest: /tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ extension_vb.stdout }}.vbox-extpack
     mode: "0644"
+
+- name: Download docker-compose
+  ansible.builtin.get_url:
+    url: "{{ docker_compose_url }}"
+    dest: /usr/local/bin/docker-compose
+    mode: "755"
 # - name: Download thunderbird to ubuntu
 #   ansible.builtin.get_url:
 #     url: "{{ thunderbird_url }}"

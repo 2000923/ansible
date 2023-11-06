@@ -54,7 +54,7 @@
     state: latest
   notify: Reboot server before update
 
-- name: remove files
+- name: Remove files
   ansible.builtin.file:
     path: /etc/apt/source.list.d/{{ item }}
     state: absent
