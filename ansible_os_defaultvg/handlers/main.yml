@@ -4,6 +4,9 @@
     state: restarted
 
 - name: Start cockpit
+  when:
+    - os_vendor == "rhel"
+    - os_maj_release | int > 7
   ansible.builtin.service:
     name: cockpit
     state: started

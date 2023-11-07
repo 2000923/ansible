@@ -4,10 +4,10 @@
   gather_facts: true
   vars:
     client: ""
-    selinux_disabled: true
     proxy: ""
     enable_satellite: false
     disabled: false
+    selinux: "true"
   tasks:
     - name: load values by default
       ansible.builtin.include_role:

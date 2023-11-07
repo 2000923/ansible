@@ -32,12 +32,11 @@
   when:
     - os_vendor == "rhel"
     - os_maj_release | int > 7
-  register: install_pkg_loc
 
 - name: Enable and started services
   when:
-    - install_pkg_loc is defined
     - os_vendor == 'rhel'
+    - os_maj_release | int > 7
   ansible.builtin.service:
     name: cockpit
     enabled: true
