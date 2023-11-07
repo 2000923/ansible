@@ -1,7 +1,7 @@
 ---
 - name: Update package cache repository from OS (RedHat)
   when:
-    - os_vendor == "redhat"
+    - ansible_os_family == "RedHat"
   ansible.builtin.yum:
     update_cache: true
   register: check_yum
@@ -15,7 +15,8 @@
   changed_when: check_zypper.rc != 0
 
 - name: Update package cache (Debian Family only)
-  when: os_vendor == "ubuntu" or os_vendor == "debian" or os_vendor == "kali"
+  when:
+    - ansible_os_family == "Debian"
   ansible.builtin.command:
     cmd: "apt update"
   register: check_apt
@@ -39,11 +40,19 @@
   ansible.builtin.set_fact:
     install_pkg: "{{ true if check_zypper.rc == 0 else false }}"
 
+- name: Install_pkg
+  ansible.builtin.debug:
+    var: install_pkg
+
 - name: Install packages to Operative System
-  when:
-    - install_pkg == true
+  when: install_pkg == true
   block:
+    - name: Show os
+      ansible.builtin.debug:
+        var: ansible_os_family
+
     - name: Include prerequisites to SO new
+      when: os_vendor == "sles"
       ansible.builtin.include_tasks: linux-prerequisites.yml
 
     - name: Install generic package in redhat/debian/sles
@@ -51,21 +60,16 @@
         name: "{{ item }}"
         state: present
       loop: "{{ linux_generic_all_packages }}"
-      environment:
-        http_proxy: "{{ proxy | default(omit) }}"
-        https_proxy: "{{ proxy | default(omit) }}"
 
     - name: Instalar software de Red Hat/CentOS
       ansible.builtin.include_tasks: linux-redhat-software-installation.yml
-      when: (os_vendor == 'centos' or
-        os_vendor == 'rhel' or
-        os_vendor == 'oracle' or
-        os_vendor == 'rocky')
+      when:
+        - ansible_os_family == "RedHat" and != os_vendor == "amazon"
 
     - name: Instalar software de Debian/Ubuntu
       ansible.builtin.include_tasks: linux-debian-software-installation.yml
-      when: os_vendor == 'ubuntu' or
-        os_vendor == 'debian'
+      when:
+        - ansible_os_family == "Debian"
 
     - name: Instalar software de SUSE
       ansible.builtin.include_tasks: linux-suse-software-installation.yml
@@ -79,49 +83,57 @@
       ansible.builtin.include_tasks: linux-amazon2-software-installation.yml
       when: (os_vendor == 'amazon' and os_release == '2')
 
+    - name: Which the atd program
+      ansible.builtin.command:
+        cmd: which at
+      register: atd_find
+      changed_when: atd_find.rc != 0
+
     - name: Habilitar servicio atd
+      when: atd_find.rc == 0
       ansible.builtin.service:
         name: atd
         state: started
-        enabled: true
+        enabled:
+          true
 
-- name: Configurar SSH - Deshabilitar consultas DNS
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "^UseDNS.*"
-    line: "UseDNS no"
-
-- name: Configurar SSH - Ajustes de keepalive 1
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "^ClientAliveInterval"
-    line: "ClientAliveInterval 30"
-
-- name: Change password authentication of no/yes
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "^#?PasswordAuthentication(.*)no"
-    line: "PasswordAuthentication yes"
-
-- name: Configurar SSH - Ajustes de keepalive 2
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "^ClientAliveCountMax"
-    line: "ClientAliveCountMax 5"
-  notify:
-    - restart sshd
+          # - name: Configurar SSH - Deshabilitar consultas DNS
+          #   ansible.builtin.lineinfile:
+          #     path: /etc/ssh/sshd_config
+          #     regexp: "^UseDNS.*"
+          #     line: "UseDNS no"
+          #
+          # - name: Configurar SSH - Ajustes de keepalive 1
+          #   ansible.builtin.lineinfile:
+          #     path: /etc/ssh/sshd_config
+          #     regexp: "^ClientAliveInterval"
+          #     line: "ClientAliveInterval 30"
+          #
+          # - name: Change password authentication of no/yes
+          #   ansible.builtin.lineinfile:
+          #     path: /etc/ssh/sshd_config
+          #     regexp: "^#?PasswordAuthentication(.*)no"
+          #     line: "PasswordAuthentication yes"
+          #
+          # - name: Configurar SSH - Ajustes de keepalive 2
+          #   ansible.builtin.lineinfile:
+          #     path: /etc/ssh/sshd_config
+          #     regexp: "^ClientAliveCountMax"
+          #     line: "ClientAliveCountMax 5"
+          #   notify:
+          #     - restart sshd
 
 - name: Deshabilitar SELinux
   ansible.posix.selinux:
     state: disabled
   when:
     - os_vendor == "rhel"
-    - selinux == false
+    - selinux == "false"
 
 - name: Personalizacion de parametros de kernel en RHEL/CentOS
   when:
-    - os_vendor == 'rhel'
-    - os_release.split('.')[0] == '7'
+    - ansible_os_family == 'RedHat'
+    - ansible_os_major_version == "7"
   block:
     - name: Remover parametros rhgb y quiet en RHEL/CentOS
       ansible.builtin.replace:
@@ -130,11 +142,10 @@
       register: edit_grub
 
     - name: Regenerar configuracion de grub
-      ansible.builtin.shell: |
-        set -o pipefail
-        grub2-mkconfig -o /boot/grub2/grub.cfg
+      ansible.builtin.command:
+        cmd: grub2-mkconfig -o /boot/grub2/grub.cfg
       register: reconf_grub
-      when: edit_grub.changed_when
+      changed_when: reconf_grub.rc != 0
 
 - name: Configurar zona horaria a America/Lima
   community.general.timezone:

@@ -1,13 +1,17 @@
 ---
-- name: install missing packages
-  when:
-   - os_vendor == 'sles'
-   - os_release.split('.')[0] == '12'
-  raw: zypper install -y python-xml gettext-runtime
-
-- name: remove packages gettext-runtime-mini sles 12
+- name: Install missing packages
   when:
     - os_vendor == 'sles'
     - os_release.split('.')[0] == '12'
-  raw: zypper --non-interactive remove gettext-runtime-mini
+  ansible.builtin.raw: zypper install -y python-xml gettext-runtime
+  register: values_null
+  changed_when: values_null.rc != 0
+
+- name: Remove packages gettext-runtime-mini sles 12
+  when:
+    - os_vendor == 'sles'
+    - os_release.split('.')[0] == '12'
+  ansible.builtin.raw: zypper --non-interactive remove gettext-runtime-mini
   ignore_errors: true
+  register: new_values
+  changed_when: new_values.rc != 0
