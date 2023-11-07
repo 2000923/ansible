@@ -7,8 +7,6 @@
   changed_when: value_sm.rc != 0
 
 - name: Check subscription for RedHat
-  when:
-    - os_vendor == 'rhel'
     - value_sm.rc == 0
   failed_when: 1 == 2
   ansible.builtin.shell: |
@@ -16,6 +14,27 @@
     subscription-manager list |grep -iE ^status\:[[:blank:]]+|tr -d " " | awk -F ":" '{print $2}'
   register: subscription_status
   changed_when: subscription_status.rc != 0
+
+- name: Debug the value subscription_status
+  ansible.builtin.debug:
+    var: "{{ item }}"
+  loop:
+    - os_register_username
+    - os_register_password
+    - subscription_status
+
+- name: Registry of Red Hat Enterprise Linux Server
+  community.general.redhat_subscription:
+    username: "{{ os_register_username }}"
+    password: "{{ os_register_password }}"
+    auto_attach: true
+    force_register: true
+  when:
+    - subscription_status.stdout in ["Not Registered", "Unknown", "NotSubscribed", "Not Subscribed"]
+    - os_register_username is defined
+    - os_register_username|length > 0
+    - os_register_password is defined
+    - os_register_password|length >0
 # - name: Configure satellite server in the client Positiva
 #   when:
 #     - os_vendor == 'rhel'

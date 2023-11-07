@@ -1,6 +1,6 @@
 ---
 - name: Include the os system
-  when: os_vendor == 'rhel'
+  when: ansible_distribution == "RedHat"
   ansible.builtin.include_tasks:
     file: os_{{ os_vendor }}.yml
 
@@ -18,9 +18,6 @@
         suseconnect_status:
           "{{ suse_connect_result.stdout | from_json | json_query('[*].status') \
           | first if suse_connect_result.rc == 0 else 'Not Registered' }}"
-      environment:
-        http_proxy: "{{ proxy | default(omit) }}"
-        https_proxy: "{{ proxy | default(omit) }}"
 
     - name: Check subscription for SuSe not client and client ACEROS to x86-64 and ppcle
       when:
@@ -32,9 +29,6 @@
         SUSEConnect -r {{ os_regcode }} -e {{ os_email }}
       register: suseconnect_reg
       changed_when: suseconnect_reg.rc != 0
-      environment:
-        http_proxy: "{{ proxy | default(omit) }}"
-        https_proxy: "{{ proxy | default(omit) }}"
 
     - name: Check for suse client ACEROS to ppcle
       when:
