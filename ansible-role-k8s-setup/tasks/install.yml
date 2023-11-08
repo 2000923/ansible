@@ -1,0 +1,47 @@
+---
+- name: YUM - Install software
+  ansible.builtin.include_tasks:
+    file: install_yum.yml
+  when: ansible_distribution not in ["Ubuntu"]
+
+- name: APT - Install software
+  ansible.builtin.include_tasks:
+    file: install_apt.yml
+  when: ansible_distribution in ["Ubuntu"]
+
+- name: Install Python modules
+  ansible.builtin.pip:
+    state: present
+    name: "{{ python_modules }}"
+
+- name: Turn off swap
+  ansible.builtin.command: swapoff -a
+  register: swapoff_value
+  changed_when: swapoff_value.rc != 0
+
+- name: Disable swap
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: "(^[^#].*swap.*)$"
+    replace: '#\1'
+
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Docker - Configure cgroup driver
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    backup: true
+    mode: "0644"
+  register: result_docker_config
+  when:
+    - ansible_facts.services["docker.service"].state is defined
+    - ansible_facts.services["docker.service"].state == "running"
+  notifiy: Docker - Restart service to apply changes
+
+- name: Docker - Restart service to apply changes
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+  when: result_docker_config.changed

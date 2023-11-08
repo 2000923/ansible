@@ -1,0 +1,22 @@
+---
+- name: Gather necessary facts
+  ansible.builtin.setup:
+    gather_subset: min
+  when: ansible_system is not defined
+
+- name: Check pre-requisites
+  ansible.builtin.include_tasks: prechecks.yml
+  when: role_action == 'install'
+
+- name: Perform installation of packages
+  ansible.builtin.include_tasks: install.yml
+  when: role_action == 'install'
+
+- name: Set listen_addr variable
+  ansible.builtin.set_fact:
+    listen_addr: "{{ ansible_env.SSH_CONNECTION.split(' ')[2] }}"
+  when: role_action in ["init","join"]
+
+- name: Initialize Swarm
+  ansible.builtin.include_tasks: k8s-init.yml
+  when: role_action == 'init'
