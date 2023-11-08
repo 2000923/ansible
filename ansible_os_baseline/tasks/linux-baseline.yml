@@ -64,7 +64,7 @@
     - name: Instalar software de Red Hat/CentOS
       ansible.builtin.include_tasks: linux-redhat-software-installation.yml
       when:
-        - ansible_os_family == "RedHat" and != os_vendor == "amazon"
+        - ansible_os_family == "RedHat"
 
     - name: Instalar software de Debian/Ubuntu
       ansible.builtin.include_tasks: linux-debian-software-installation.yml
