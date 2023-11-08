@@ -1,0 +1,6 @@
+---
+- name: Docker - Restart service to apply changes
+  when: result_docker_config.changed
+  ansible.builtin.service:
+    name: docker
+    state: restarted
