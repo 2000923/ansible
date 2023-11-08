@@ -139,7 +139,8 @@
 #    changed_when: setupcon_rst.rc != 0
 
 - name: Change enviroment in rhel
-  when: os_vendor == 'rhel'
+  when:
+    - ansible_os_family == "RedHat"
   ansible.builtin.lineinfile:
     path: /etc/environment
     regexp: "{{ item.regexp }}"

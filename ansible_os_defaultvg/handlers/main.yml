@@ -15,3 +15,9 @@
   ansible.builtin.reboot:
     reboot_timeout: 3600
   when: selinux_disabled.changed == yes
+
+- name: Execute setupcon
+  ansible.builtin.command:
+    cmd: setupcon
+  register: setupcon_rst
+  changed_when: setupcon_rst.rc != 0

@@ -15,9 +15,7 @@
 
     - name: Save status of register in value
       ansible.builtin.set_fact:
-        suseconnect_status:
-          "{{ suse_connect_result.stdout | from_json | json_query('[*].status') \
-          | first if suse_connect_result.rc == 0 else 'Not Registered' }}"
+        suseconnect_status: "{{ suse_connect_result.stdout | from_json | json_query('[*].status') | first if suse_connect_result.rc == 0 else 'Not Registered' }}"
 
     - name: Check subscription for SuSe not client and client ACEROS to x86-64 and ppcle
       when:

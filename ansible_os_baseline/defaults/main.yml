@@ -37,7 +37,6 @@ linux_generic_rhel_packages:
   - tigervnc-server
   - yum-utils
 
-
 linux_redhat6_packages:
   - MySQL-python
   - finger
@@ -50,7 +49,6 @@ linux_redhat6_packages:
   - screen
 
 linux_redhat7_packages:
-  - "@^ServerwithGUI"
   - adcli
   - finger
   - firewalld
@@ -103,7 +101,7 @@ linux_redhat8_packages:
   - tmux
   - redhat-lsb
 
-linux_redhat9_packages: 
+linux_redhat9_packages:
   - initial-setup-gui
   - tmux
   - iptraf-ng
@@ -158,16 +156,3 @@ linux_amazon2_packages:
   - procps-ng
   - system-lsb
   - tmux
-
-#version: "{{os_release.split('.'[0])}}"
-#architecture: "{{ansible_architecture}}"
-#version_os_7: 14
-#version_os_8: 16
-#version_os_9: 4
-#linux_domain_epel: "https://dl.fedoraproject.org/pub/epel/{{version}}/Everything/{{architecture}}/e/epel-release-{{version}}-{{linux_domain_epel}}-
-#<%
-#
-#%>"
-#
-#linux_epel_release: 9-4.el9.noarch.rpm
-#linux_epel_8_release: 8-16.el8.noarch.rpm
