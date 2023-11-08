@@ -1,9 +1,6 @@
 ---
 - name: Instalar software esencial en Debian/Ubuntu
-  apt:
+  ansible.builtin.apt:
     name: "{{ linux_debian_packages }}"
     state: present
     update_cache: true
-  environment:
-    http_proxy: "{{ proxy | default(omit) }}"
-    https_proxy: "{{ proxy | default(omit) }}"

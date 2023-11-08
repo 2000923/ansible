@@ -1,10 +1,9 @@
 ---
-- include_tasks: ./linux-amazon-software-installation.yml
+- name: Softwarefor amazon
+  ansible.builtin.include_tasks:
+    file: linux-amazon-software-installation.yml
 
 - name: Instalar software esencial en Amazon 2
-  package:
+  ansible.builtin.package:
     name: "{{ linux_amazon2_packages }}"
     state: present
-  environment:
-    http_proxy: "{{ proxy | default(omit) }}"
-    https_proxy: "{{ proxy | default(omit) }}"
