@@ -1,40 +1,35 @@
 ---
 - name: YUM - Install dependencies
-  yum:
+  ansible.builtin.yum:
     name: "{{ dependencies[ansible_distribution] }}"
-  become: yes
   when: ansible_distribution not in ["Ubuntu"]
 
 - name: YUM - Configure repositories
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: kubernetes
     description: Kubernetes
     baseurl: "{{ repositories[ansible_distribution].url }}"
     gpgkey: "{{ repositories[ansible_distribution]['keys'] }}"
-    enabled: yes
-    gpgcheck: yes
+    enabled: true
+    gpgcheck: true
     exclude:
       - kubelet
       - kubeadm
       - kubectl
-  become: yes
   when: ansible_distribution == "CentOS"
 
 - name: YUM - Install packages
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages[ansible_distribution] }}"
     disable_excludes: kubernetes
-  become: yes
   when: ansible_distribution not in ["Ubuntu"]
 
 - name: Disable SELinux
-  selinux:
+  ansible.posix.selinux:
     state: disabled
-  become: yes
 
 - name: Enable kubelet
-  service:
+  ansible.builtin.service:
     name: kubelet
     state: started
-    enabled: yes
-  become: yes
+    enabled: true
