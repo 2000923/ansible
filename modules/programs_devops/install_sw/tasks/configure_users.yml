@@ -210,3 +210,9 @@
       changed_when: cpan_local_lib.rc != 0
       args:
         executable: /bin/bash
+
+    - name: Install plugins for vagrant
+      ansible.builtin.command:
+        cmd: "{{ vagrant.plugins }}"
+      register: vagrant_plugins
+      changed_when: vagrant_plugins.rc != 0
