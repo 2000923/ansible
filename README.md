@@ -27,5 +27,6 @@ eflores267@gmail.com
 # Comunicado
 
 A fecha 31/10/2023 se establece:
-* Fin del soporte a rama main de Canvia se apertura nueva rama master, en ella se ira actualizando los playbooks.
-Saludos
+
+- Fin del soporte a rama main de Canvia se apertura nueva rama master, en ella se ira actualizando los playbooks.
+  Saludos
