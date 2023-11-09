@@ -30,10 +30,6 @@
   ansible.builtin.include_tasks:
     file: configure_users.yml
 
-- name: Configure servers for autocomplete
-  ansible.builtin.include_tasks:
-    file: configure_programs.yml
-
 - name: Add collection community general
   ansible.builtin.shell:
     cmd: ansible-galaxy collection install "{{ item }}"

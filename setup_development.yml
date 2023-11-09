@@ -6,4 +6,4 @@
   tasks:
     - name: Add package role
       ansible.builtin.include_role:
-        name: install_sw
+        name: ansible-role-devops-setup

@@ -93,6 +93,11 @@
         executable: pip3
       loop: "{{ pip_packages }}"
 
+    - name: Configure servers for autocomplete
+      ansible.builtin.include_tasks:
+        file: configure_programs.yml
+      become: true
+
     - name: Copy template the init.lua
       ansible.builtin.template:
         src: init.j2

@@ -15,7 +15,7 @@
     - "{{ base_packages }}"
     - "{{ packages }}"
 
-- name: Install package extras
+- name: Download packages to tmp directory
   ansible.builtin.include_tasks:
     file: get_temp_url.yml
 
@@ -45,12 +45,6 @@
     state: present
     classic: true
   loop: "{{ snap_packages }}"
-
-# - name: Download tarball in the /opt/
-#   ansible.builtin.unarchive:
-#     src: /tmp/thunderbird.tar.gz
-#     dest: /opt/
-#     remote_src: true
 
 - name: Install the inkdrop deb in the pc
   ansible.builtin.apt:
