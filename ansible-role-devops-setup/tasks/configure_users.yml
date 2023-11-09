@@ -96,7 +96,6 @@
     - name: Configure servers for autocomplete
       ansible.builtin.include_tasks:
         file: configure_programs.yml
-      become: true
 
     - name: Copy template the init.lua
       ansible.builtin.template:
@@ -174,13 +173,14 @@
       ansible.builtin.raw: |
         nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shellcheck' -c 'quitall'
       register: shellcheck
-      changed_when: shellcheck.rc != 0
+      changed_when:
+        shellcheck.rc != 0
 
-    - name: Install mason bash in programs
-      ansible.builtin.raw: |
-        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shell' -c 'quitall'
-      register: shell
-      changed_when: shell.rc != 0
+        #    - name: Install mason bash in programs
+        #      ansible.builtin.raw: |
+        #        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shell' -c 'quitall'
+        #      register: shell
+        #      changed_when: shell.rc != 0
 
     - name: Install tree-sitter bash in programs
       ansible.builtin.raw: |
@@ -218,6 +218,6 @@
 
     - name: Install plugins for vagrant
       ansible.builtin.command:
-        cmd: "{{ vagrant.plugins }}"
+        cmd: vagrant plugin install "{{ vagrant[ansible_distribution].plugin }}"
       register: vagrant_plugins
       changed_when: vagrant_plugins.rc != 0
