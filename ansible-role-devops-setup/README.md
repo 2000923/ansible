@@ -8,10 +8,19 @@
 # Configure the laptop and pc for program the environment developer
 
 ### Motivo
-When input the working, this company 
-Cada vez que me facilitan una maquina debo configurar mi entorno de escritorio para desarrollar tecnologías en devops, esto no es seguido, pero entiendase que configurar todo tu equipo toma al menos unas cuantas horas por ende decidí crear un playbook que me permita configurar mi equipo con todo lo que necesito.
+
+Cada vez que me facilitan una maquina debo configurar mi entorno de escritorio para desarrollar tecnologías en devops, esto no es seguido, pero entiendase
+que configurar todo tu equipo toma al menos unas cuantas horas por ende decidí crear un playbook que me permita configurar mi equipo con todo lo que necesito.
+
+### Requisitos previos
+
+    - Realizar un backup de tu escritorio
+    - Validar tu acceso a internet
+    - En caso de haber generado tus propias llaves privadas/publicas copiarlas en
+      en otro directorio para aposteriori restablecerlas con mv, cp o rsync.
 
 ### Estructura de directorios
+
 ```mermaid
 graph TD
     program_devops --> install_sw
@@ -42,9 +51,9 @@ graph TD
     vars --> private.yml
 ```
 
-a. *program_devops*: Directorio en donde se define el projecto.
+a. _program_devops_: Directorio en donde se define el projecto.
 
-b. *install_sw*: Directorio que contiene los roles
+b. _install_sw_: Directorio que contiene los roles
 
 1. defaults: Directorio donde se declara los nombres de paquetes a instalar por ejemplo: samba, samba-utils, code, etc...
 
@@ -55,31 +64,34 @@ b. *install_sw*: Directorio que contiene los roles
 4. templates: Plantillas donde se configura los archivos jinja2 donde se personaliza el entorno a configurar
 
 5. vars: Define the values from project with urls of packages and user's configuration
-    * The private_yml file is encrypted because it contains sensitive information, such as passwords. This makes it useful for securely declaring and storing confidential values.
 
-        a. _git_user_name_: << you user account in [github](https://github.com)>>
+   - The private_yml file is encrypted because it contains sensitive information, such as passwords. This makes it useful for securely declaring and storing confidential values.
 
-        b. _git_user_email_: << you email account register in github or personal email >>
+     a. _git_user_name_: << you user account in [github](https://github.com)>>
 
-        c. _token_pro_ubuntu_: << The token from ubuntu pro, this is free, you register in canonical >>
-        
-    **Note:** If you prefer, you can leave the values blank, but you must declare the variables as empty.
+     b. _git_user_email_: << you email account register in github or personal email >>
+
+     c. _token_pro_ubuntu_: << The token from ubuntu pro, this is free, you register in canonical >>
+
+   **Note:** If you prefer, you can leave the values blank, but you must declare the variables as empty.
+
 6. defaults: Contiene la configuración por defecto para el ansible.
 
 # Alcance
 
-- **[Ubuntu 22.04](https://www.ubuntu.com)** 
+- **[Ubuntu 22.04](https://www.ubuntu.com)**
 - **[Xubuntu 22.04](https://xubuntu.org/)**
 
 ## Procedimiento de instalacion
-Para poder tener a disponibilidad todos los paquetes se debe instalar el SO ubuntu en tu maquina (ver video) 
+
+Para poder tener a disponibilidad todos los paquetes se debe instalar el SO ubuntu en tu maquina (ver video)
 
 a. [Instalar Ubuntu destkop](https://www.youtube.com/watch?v=8MRibUo9VAA)
 
-b. Instalar ansible 
+b. Instalar ansible
 
 ```shell
-sudo apt install python3 python3-pip
+sudo apt install python3 python3-pip curl git ssh -y
 sudo pip3 install ansible-core
 ansible-galaxy collection install community.general
 ansible-galaxy collection install ansible.posix
@@ -89,6 +101,11 @@ ansible-galaxy collection install ansible.posix
 ansible-playbook -i inventory site.yml -u <tu usuario> --private-keys <tu_llave>
 ```
 
+## Observaciones:
+
+En caso de ser usuario, que estas reinstalando el SO por algun inconveniente, puedes copiar las llaves que tenias anteriormente,
+
 ## Contacts
-* **Autor:** [Edwin Enrique Flores Bautista](https://www.linkedin.com/in/edwin-enrique-flores-bautista/)
-* **Email:** 2000923@unmsm.edu.pe
+
+- **Autor:** [Edwin Enrique Flores Bautista](https://www.linkedin.com/in/edwin-enrique-flores-bautista/)
+- **Email:** 2000923@unmsm.edu.pe
