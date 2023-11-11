@@ -38,4 +38,4 @@ docker_compose_url: "https://github.com/docker/compose/releases/download/v2.23.0
 
 vagrant:
   Ubuntu:
-    plugin: vagrant_group
+    plugin: vagrant-group

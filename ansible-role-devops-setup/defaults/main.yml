@@ -2,6 +2,7 @@
 base_packages:
   # Dev tools
   - build-essential
+  - ffmpeg
   - libbz2-dev
   - libffi-dev
   - libgdbm-dev

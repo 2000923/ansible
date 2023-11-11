@@ -37,20 +37,22 @@
         path: /etc/default/subsonic
         regexp: "SUBSONIC_USER=root"
         line: "SUBSONIC_USER=subsonic"
-      notify: restarted subsonic
+      notify: Restarted subsonic
 
     - name: Create directory for mount music and movies
+      tags: web
       ansible.builtin.file:
         path: /var/{{ item }}
         mode: "0755"
         owner: subsonic
         group: subsonic
+        state: directory
       loop:
         - music
         - movie
 
   handlers:
-    - name: restarted subsonic
+    - name: Restarted subsonic
       ansible.builtin.systemd:
         name: subsonic
         state: restarted
