@@ -122,7 +122,7 @@
     executable: /bin/bash
 
 - name: Install network vboxnet0 in local
-  cmd: |
+  ansible.builtin.shell: |
     set -o pipefail
     VBoxManage hostonlyif create
     VBoxManage hostonlyif ipconfig vboxnet0 --dhcp --ip=192.168.56.0 --netmask=255.255.255.0

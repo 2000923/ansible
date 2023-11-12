@@ -200,6 +200,34 @@
         owner: "{{ os_user }}"
         mode: "0644"
 
+    - name: File the vault txt
+      ansible.builtin.file:
+        path: /etc/vault.txt
+        mode: "0600"
+        owner: root
+        group: root
+        state: touch
+
+    - name: Insert line with password
+      ansible.builtin.lineinfile:
+        path: /etc/vault.txt
+        line: "{{ vault_password }}"
+        state: present
+
+    - name: Create the file for user become
+      ansible.builtin.file:
+        path: /etc/user.txt
+        owner: root
+        group: root
+        mode: "0600"
+        state: touch
+
+    - name: Insert line with become password
+      ansible.builtin.lineinfile:
+        path: /etc/user.txt
+        line: "{{ become_password }}"
+        state: present
+
     - name: Configure cpan module
       ansible.builtin.command:
         cmd: echo yes | cpan
