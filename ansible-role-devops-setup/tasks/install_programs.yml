@@ -94,6 +94,12 @@
     global: true
   loop: "{{ npm_packages_sudo }}"
 
+- name: Install packages complements for nvim
+  ansible.builtin.pip:
+    name: "{{ item }}"
+    executable: pip3
+  loop: "{{ pip_packages }}"
+
 - name: Configure cpan into OS
   ansible.builtin.shell:
     cmd: |
@@ -114,3 +120,35 @@
   changed_when: vbox_extension.rc != 0
   args:
     executable: /bin/bash
+
+- name: Install network vboxnet0 in local
+  cmd: |
+    set -o pipefail
+    VBoxManage hostonlyif create
+    VBoxManage hostonlyif ipconfig vboxnet0 --dhcp --ip=192.168.56.0 --netmask=255.255.255.0
+  register: vbox_hostonly
+  changed_when: vbox_hostonly.rc != 0
+  args:
+    executable: /bin/bash
+
+- name: Insert the point mount for my owner pc
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: "{{ item }}"
+    insertbefore: ".*swap.*"
+  loop:
+    - "#/dev/mapper/vgdata-Home /home/  xfs defaults 0 0"
+    - "/dev/mapper/vgdata-Downloads /home/eflores/Downloads xfs defaults 0 0"
+    - '/dev/mapper/vgdata-machine /home/eflores/VirtualBox\040VMs xfs defaults 0 0'
+    - "/dev/mapper/vgdata-vagrant /home/eflores/.vagrant.d/ xfs defaults 0  0"
+    - "/dev/mapper/vgdata-iso  /mnt/iso  xfs  defaults   0   0"
+
+- name: Add the lines mount for my pc
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: "{{ item }}"
+    insertafter: ".*swap.*"
+  loop:
+    - "#/dev/sda1 /mnt/data ntfs-3g defaults 0 0"
+    - "#/mnt/data/Music  /var/music none defaults,bind 0 0"
+    - "#/mnt/data/Movies /var/movie none defaults,bind 0 0"

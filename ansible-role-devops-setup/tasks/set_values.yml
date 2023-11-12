@@ -20,6 +20,7 @@
 - name: Capture user from remote server
   ansible.builtin.set_fact:
     os_user: "{{ ansible_env.SUDO_USER }}"
+
 - name: Register ubuntu pro for updates
   ansible.builtin.shell:
     cmd: |
@@ -29,3 +30,4 @@
   changed_when: token_pro.rc != 0
   args:
     executable: /bin/bash
+  ignore_errors: true

@@ -60,6 +60,14 @@
     single_branch: true
     version: master
 
+- name: Dowload gpg-key from repository
+  ansible.builtin.git:
+    repo: https://github.com/netson/ansible-gpg-key.git
+    dest: /tmp/
+    clone: true
+    single_branch: true
+    version: master
+
 - name: Configure Virtualbox for extensions
   ansible.builtin.shell: |
     set -o pipefail

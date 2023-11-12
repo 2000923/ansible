@@ -93,9 +93,9 @@
         executable: pip3
       loop: "{{ pip_packages }}"
 
-    - name: Configure servers for autocomplete
-      ansible.builtin.include_tasks:
-        file: configure_programs.yml
+    #    - name: Configure servers for autocomplete
+    #      ansible.builtin.include_tasks:
+    #        file: configure_programs.yml
 
     - name: Copy template the init.lua
       ansible.builtin.template:
@@ -173,14 +173,13 @@
       ansible.builtin.raw: |
         nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shellcheck' -c 'quitall'
       register: shellcheck
-      changed_when:
-        shellcheck.rc != 0
+      changed_when: shellcheck.rc != 0
 
-        #    - name: Install mason bash in programs
-        #      ansible.builtin.raw: |
-        #        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shell' -c 'quitall'
-        #      register: shell
-        #      changed_when: shell.rc != 0
+    - name: Install tree-sitter bash in programs
+      ansible.builtin.raw: |
+        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'TSInstall python' -c 'quitall'
+      register: shellcheck
+      changed_when: shellcheck.rc != 0
 
     - name: Install tree-sitter bash in programs
       ansible.builtin.raw: |

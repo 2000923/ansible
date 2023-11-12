@@ -24,3 +24,14 @@
     insertafter: 'Defaults\suse_pty'
     line: "Defaults\ttimestamp_type=global"
     validate: /usr/sbin/visudo -cf %s
+
+- name: Create directories by Defaults
+  ansible.builtin.file:
+    path: "/etc/{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ os_user }}"
+    group: "{{ os_user }}"
+  loop:
+    - "/mnt/data"
+    - "/mnt/iso"

@@ -131,6 +131,7 @@ packages:
   - ninja-build
   - microsoft-edge-stable
   - nodejs
+  - python3-packaging
   - python3-pip
   - python3-setuptools
   - python3-venv
