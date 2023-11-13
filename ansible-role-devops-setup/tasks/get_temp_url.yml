@@ -60,10 +60,10 @@
     single_branch: true
     version: master
 
-- name: Dowload gpg-key from repository
+- name: Download gpg-key from repository
   ansible.builtin.git:
     repo: https://github.com/netson/ansible-gpg-key.git
-    dest: /tmp/
+    dest: /tmp/netson/
     clone: true
     single_branch: true
     version: master
