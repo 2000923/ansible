@@ -21,6 +21,7 @@ Scripts en ansible desarrollados para equipos UNIX ( solaris/GNU-Linux/AIX ) req
 Dentro del desarrollo se encuentra muchos casos practicos relacionados a anteriores trabajos realizados tales como:
 
 - Estandarizacion del SO
+- Instalacion de programas
 
 # Developer
 
