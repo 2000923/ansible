@@ -18,7 +18,9 @@ Scripts en ansible desarrollados para equipos UNIX ( solaris/GNU-Linux/AIX ) req
 
 # Estructura
 
-Dentro del desarrollo se encuentra muchos casos practicos relacionados a anteriores trabajos realizados
+Dentro del desarrollo se encuentra muchos casos practicos relacionados a anteriores trabajos realizados tales como:
+
+- Estandarizacion del SO
 
 # Developer
 
