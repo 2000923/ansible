@@ -22,6 +22,7 @@ Dentro del desarrollo se encuentra muchos casos practicos relacionados a anterio
 
 - Estandarizacion del SO
 - Instalacion de programas
+- Instalacion de utilitarios
 
 # Developer
 
