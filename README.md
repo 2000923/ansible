@@ -18,19 +18,8 @@ Scripts en ansible desarrollados para equipos UNIX ( solaris/GNU-Linux/AIX ) req
 
 # Estructura
 
-Dentro del desarrollo se encuentra muchos casos practicos relacionados a anteriores trabajos realizados tales como:
-
-- Estandarizacion del SO
-- Instalacion de programas
-- Instalacion de utilitarios
+Dentro del desarrollo se encuentra muchos casos practicos relacionados a anteriores trabajos realizados.
 
 # Developer
 
-eflores267@gmail.com
-
-# Comunicado
-
-A fecha 31/10/2023 se establece:
-
-- Fin del soporte a rama main de Canvia se apertura nueva rama master, en ella se ira actualizando los playbooks.
-  Saludos
+2000923@unmsm.edu.pe
