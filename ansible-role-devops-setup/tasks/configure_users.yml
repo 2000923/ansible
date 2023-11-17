@@ -11,6 +11,7 @@
       changed_when: configure_git.rc != 0
       args:
         executable: /bin/bash
+      ignore_errors: true
 
     - name: Create ~/.local/share/fonts
       ansible.builtin.file:

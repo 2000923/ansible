@@ -18,6 +18,7 @@ que configurar todo tu equipo toma al menos unas cuantas horas por ende decidí 
     - Validar tu acceso a internet
     - En caso de haber generado tus propias llaves privadas/publicas copiarlas en
       en otro directorio para aposteriori restablecerlas con mv, cp o rsync.
+    - Crear el archivo private.yml dentro del directorio vars
 
 ### Estructura de directorios
 
@@ -74,6 +75,17 @@ b. _install_sw_: Directorio que contiene los roles
      c. _token_pro_ubuntu_: << The token from ubuntu pro, this is free, you register in canonical >>
 
    **Note:** If you prefer, you can leave the values blank, but you must declare the variables as empty.
+
+Example of private.yml
+
+```bash
+cat private.yml
+# %%%%%%%%%%%%%%%% git config %%%%%%%%%%%%%%%%%%%
+git_user_name: '<< user_git >>'
+git_user_email: '<< mail_user >>'
+# %%%%%%%%%%%%%%%% Token pro ubuntu personal %%%%%%%%%%%%%%%%%%%
+token_pro_ubuntu: "<< token_id_pro_ubuntu from ubuntu.com >>"
+```
 
 6. defaults: Contiene la configuración por defecto para el ansible.
 
