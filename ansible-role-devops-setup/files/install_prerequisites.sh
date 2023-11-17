@@ -5,6 +5,7 @@ USER=$(whoami)
 SSH_HOME="/home/${USER}/.ssh"
 sudo apt update --force-yes -y
 sudo apt install python3 python3-pip curl git ssh sshpass -y
+sleep 1m
 sudo pip3 install ansible-core
 band=false
 if [[ ! -d ${SSH_HOME} ]]; then
@@ -20,14 +21,17 @@ if ! grep "^LAN=en_US.utf-8" /etc/environment; then
   band=true
 fi
 
-if ! grep "LC_ALL=en_US.utf8" /etc/environment; then
-  sudo sed -i "2i LC_ALL=en_US.utf8" /etc/environment
+if ! grep "^LC_ALL=en_US.utf-8" /etc/environment; then
+  sudo sed -i "2i LC_ALL=en_US.utf-8" /etc/environment
   band=true
 fi
 
 if [[ band == true ]]; then 
   sudo update-locale
+  sleep 1
 fi
 
 ansible-galaxy collection install community.general
 ansible-galaxy collection install ansible.posix
+sudo shutdown -r now
+
