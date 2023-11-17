@@ -1,14 +1,33 @@
 #!/bin/bash
 #
 # packages and install
-SSH_HOME="~/.ssh"
+USER=$(whoami)
+SSH_HOME="/home/${USER}/.ssh"
 sudo apt update --force-yes -y
-sudo apt install python3 python3-pip curl git ssh sshpass -y --force-yes
+sudo apt install python3 python3-pip curl git ssh sshpass -y
 sudo pip3 install ansible-core
+band=false
 if [[ ! -d ${SSH_HOME} ]]; then
   mkdir ~/.ssh && chmod 755 ~/.ssh
 fi
-ssh-keygen -t rsa -b 2048 -N "" -f ~/.ssh/$(whoami)/id_rsa
-cat ${SSH_HOME}/id_rsa.pub > ~/.ssh/authorized_keys
+if [[ ! -f "/home/${USER}/.ssh/id_rsa" ]]; then
+  ssh-keygen -t rsa -b 2048 -N "" -f ~/.ssh/id_rsa
+fi
+cat ${SSH_HOME}/id_rsa.pub >> ~/.ssh/authorized_keys
+
+if ! grep "^LAN=en_US.urf-8" /etc/environment; then
+  sudo sed -ie "1i LAN=en_US.utf-8" >> /etc/environment
+  band=true
+fi
+
+if ! grep "LC_ALL=en_US.utf8" /etc/environment; then
+  sudo sed -i "2i LC_ALL=en_US.utf8" >> /etc/environment
+  band=true
+fi
+
+if [[ band == true ]]; then 
+  sudo update-locale
+fi
+
 ansible-galaxy collection install community.general
 ansible-galaxy collection install ansible.posix
