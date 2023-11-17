@@ -22,16 +22,15 @@ if ! grep "^LAN=en_US.utf-8" /etc/environment; then
 fi
 
 if ! grep "^LC_ALL=en_US.utf-8" /etc/environment; then
-  sudo sed -i "2i LC_ALL=en_US.utf-8" /etc/environment
+  sudo sed -ie "2i LC_ALL=en_US.utf-8" /etc/environment
   band=true
 fi
 
 if [[ band == true ]]; then 
   sudo update-locale
-  sleep 1
+  sudo shutdown -r now
 fi
 
-ansible-galaxy collection install community.general
-ansible-galaxy collection install ansible.posix
-sudo shutdown -r now
+# ansible-galaxy collection install community.general
+# ansible-galaxy collection install ansible.posix
 

@@ -100,14 +100,32 @@ Para poder tener a disponibilidad todos los paquetes se debe instalar el SO ubun
 
 a. [Instalar Ubuntu destkop](https://www.youtube.com/watch?v=8MRibUo9VAA)
 
-b. Instalar ansible
+b. Instalar ansible, puedes instalar el script que se ubica en files/intall_prerequisites.sh o ejecutar paso por paso
 
 ```shell
-sudo apt install python3 python3-pip curl git ssh -y
+bash
+sudo apt update --force-yes
+sudo apt install python3 python3-pip curl git ssh sshpass -y
 sudo pip3 install ansible-core
+# crear el directorio .ssh o las llaves private/public en caso de no tenerlas
+mkdir -p ~/.ssh ; if [[ ! -f ~/.ssh/id_rsa && ! -f ~/.ssh/id_rsa.pub ]]; then ssh-keygen -t rsa -b 2048 -N "" -f ~/.ssh/id_rsa; cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys ; fi
+# validar si tienes declarado el ^LAN en /etc/environment sino añadirlo.
+if ! grep -Ei "^(LAN|LC_ALL).*" /etc/environment; then
+    sudo sed -ie "1i LAN=en_US.utf-8" /etc/environment
+    sudo sed -ie "2i LC_ALL=en_US.utf-8" /etc/environment
+    sudo update-locale
+fi
+sudo shutdown -r now
+```
+
+c. AL finalizar de ejecutar el paso a paso o el script install_prerequisites.sh instalar los modulos de ansible-galaxy
+
+```shell
 ansible-galaxy collection install community.general
 ansible-galaxy collection install ansible.posix
 ```
+
+d. Ejecutar el playbook
 
 ```shell
 ansible-playbook -i inventory site.yml -u <tu usuario> --private-keys <tu_llave>
