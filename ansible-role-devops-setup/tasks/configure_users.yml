@@ -47,10 +47,10 @@
 
     - name: Clone a repo in the separate directoryfisher install craftzdog
       ansible.builtin.git:
-        repo: https://github.com/craftzdog/dotfiles-public.git
+        repo: https://github.com/2000923/dotfiles-public.git
         dest: /tmp/ansible-examples
         update: false
-        version: master
+        version: main
 
     - name: Copy the directories from remote server
       ansible.builtin.copy:
