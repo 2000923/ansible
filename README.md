@@ -7,6 +7,31 @@
 [![Repository License](https://img.shields.io/badge/license-GPL%20v3.0-brightgreen.svg)](COPYING)
 [![Ansible CII Best Practices certification](https://bestpractices.coreinfrastructure.org/projects/2372/badge)](https://bestpractices.coreinfrastructure.org/projects/2372)
 
+# Repositorio
+
+En este entorno de trabajo, encontraras varios proyectos, algunos desordenados, perdon por ello pero poco a poco lo corregiremos.
+
+# Proyectos
+
+## Devops:
+
+### Monta tu entorno para trabajar en GNU-Linux
+
+    Nota: Cansado de instalar manualmente tu entorno de desarrollo en ambientes GNU/LINUX ( por el momento soporta UBUNTU family), ejecuta este playbook y instala todos los programas que necesitas
+    Lista:
+    a. Personalizacion de tu SO, todo ello puedes ver en el apartado defaults/main.yml
+        1. Instalacion de herramientas de administracion, tale como htop; nmon; etc.
+        2. Instalacion de tools para desarrollo, tales como python3 python3.pip, etc.
+        3. Herramientas de red tales como nmap, utilitarios.
+    b. Configuracion de vim basado en el trabajo de ! [cratzydog](https://github.com/craftzdog/dotfiles-public)
+    c. Instalacion de virtualbox
+        1. Instalacion de Oracle Extension Pack
+        2. Configuracion de vboxnet0 con la red 192.168.56.0/22
+    d. Instalacion de cli, tales como azure, aws y otros.
+    e. Instalacion de docker
+    f. Instalacion de vagrant
+        1. Instalacion de plugins group
+
 # Ansible for Unix
 
 Scripts en ansible desarrollados para equipos UNIX ( solaris/GNU-Linux/AIX ) requiere
