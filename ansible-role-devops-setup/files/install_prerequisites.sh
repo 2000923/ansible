@@ -15,7 +15,7 @@ if [[ ! -f "/home/${USER}/.ssh/id_rsa" ]]; then
 fi
 cat ${SSH_HOME}/id_rsa.pub >> ~/.ssh/authorized_keys
 
-if ! grep "^LAN=en_US.urf-8" /etc/environment; then
+if ! grep "^LAN=en_US.utf-8" /etc/environment; then
   sudo sed -ie "1i LAN=en_US.utf-8" /etc/environment
   band=true
 fi
