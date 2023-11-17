@@ -154,38 +154,26 @@
     - name: Execute the packer install for plugins
       ansible.builtin.raw: |
         nvim --headless -c 'redir >> /tmp/nvim.log' -c 'autocmd User PackerComplete quitall' -c PackerSync
-      register: packer
-      changed_when: packer.rc != 0
-
-    - name: Execute the packer install for plugins
-      ansible.builtin.raw: |
-        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'autocmd User PackerComplete quitall' -c PackerInstall
-      register: packer
-      changed_when: packer.rc != 0
+      register: autocmd_packercomplete
+      changed_when: autocmd_packercomplete.rc != 0
 
     - name: Execute the packer install for plugins
       ansible.builtin.raw: |
         nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonUpdate' -c 'quitall'
-      register: packer
-      changed_when: packer.rc != 0
-
-    - name: Install mason bash in programs
-      ansible.builtin.raw: |
-        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shellcheck' -c 'quitall'
-      register: shellcheck
-      changed_when: shellcheck.rc != 0
+      register: mason_update
+      changed_when: mason_update.rc != 0
 
     - name: Install tree-sitter bash in programs
       ansible.builtin.raw: |
-        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'TSInstall python' -c 'quitall'
-      register: shellcheck
-      changed_when: shellcheck.rc != 0
+        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shellcheck ansible-language-server ansible-lint' -c 'quitall'
+      register: mason_programs
+      changed_when: mason_programs.rc != 0
 
     - name: Install tree-sitter bash in programs
       ansible.builtin.raw: |
-        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'TSInstall bash' -c 'quitall'
-      register: shellcheck
-      changed_when: shellcheck.rc != 0
+        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'TSInstall python bash' -c 'quitall'
+      register: tsintall_programs
+      changed_when: tsintall_programs.rc != 0
 
     - name: Create the directory to save ansible.cfg file
       ansible.builtin.file:
