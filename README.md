@@ -32,6 +32,8 @@ En este entorno de trabajo, encontraras varios proyectos, algunos desordenados, 
     f. Instalacion de vagrant
         1. Instalacion de plugins group
 
+    Mayor detalle en Readme
+
 # Ansible for Unix
 
 Scripts en ansible desarrollados para equipos UNIX ( solaris/GNU-Linux/AIX ) requiere
