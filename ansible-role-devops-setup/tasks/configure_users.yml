@@ -166,7 +166,7 @@
 
     - name: Install tree-sitter bash in programs
       ansible.builtin.raw: |
-        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shellcheck ansible-language-server ansible-lint' -c 'quitall'
+        nvim --headless -c 'redir >> /tmp/nvim.log' -c 'MasonInstall shellcheck ansible-language-server ansible-lint black mypy pyright ruff' -c 'quitall'
       register: mason_programs
       changed_when: mason_programs.rc != 0
 
