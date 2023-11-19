@@ -174,3 +174,5 @@ pip_packages:
   - "ansible-core"
   - tree-sitter
   - jmespath
+  - matplotlib
+  - charts
