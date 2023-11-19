@@ -5,7 +5,6 @@ linux_generic_all_packages:
   - at
   - bzip2
   - iotop
-  - lsscsi
   - net-tools
   - nmap
   - perl
@@ -24,6 +23,7 @@ linux_generic_all_packages:
 
 linux_generic_rhel_packages:
   - "@Base"
+  - lsscsi
   - bind-utils
   - dos2unix
   - lftp
@@ -131,6 +131,7 @@ linux_debian_packages:
   - ccze
   - finger
   - host
+  - lsscsi
   - libdate-manip-perl
   - nmon
   - ntp
@@ -143,6 +144,7 @@ linux_debian_packages:
 linux_generic_amazon_packages:
   - finger
   - iptraf
+  - lsscsi
   - libselinux-python
   - ntp
   - ntpdate
