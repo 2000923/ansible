@@ -43,6 +43,8 @@ base_packages:
   - iotop
   - keepassxc
   - libdate-manip-perl
+  - libsox3
+  - libsox-fmt-all
   - links
   - lsb-release
   - lsscsi
