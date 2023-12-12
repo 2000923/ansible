@@ -1,8 +1,10 @@
 ---
 - name: Aplicar hardening a Linux
-  include_tasks: linux-hardening.yml
+  ansible.builtin.include_tasks:
+    file: linux-hardening.yml
   when: ansible_system == 'Linux'
 
 - name: Aplicar hardening a Windows
-  include_tasks: windows-hardening.yml
+  ansible.builtin.include_tasks:
+    file: windows-hardening.yml
   when: ansible_system == 'Win32NT'

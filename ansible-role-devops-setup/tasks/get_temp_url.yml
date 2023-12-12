@@ -88,6 +88,22 @@
     url: "{{ docker_compose_url }}"
     dest: /usr/local/bin/docker-compose
     mode: "755"
+
+- name: Download the draw.io
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      curl -s {{ get_url_drawio }} | grep browser_download_url  | grep -E 'amd64.*deb' | cut -d ":" -f 2-|tr -d "\""
+  register: set_drawio
+  changed_when: set_drawio.rc != 0
+  args:
+    executable: /bin/bash
+
+- name: Download file deb for draw.io
+  ansible.builtin.get_url:
+    url: "{{ set_drawio.stdout }}"
+    dest: /tmp/drawio.deb
+    mode: "0644"
 # - name: Download thunderbird to ubuntu
 #   ansible.builtin.get_url:
 #     url: "{{ thunderbird_url }}"

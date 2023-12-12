@@ -116,3 +116,17 @@
     repo: "ppa:obsproject/obs-studio"
     codename: "{{ ansible_distribution_release }}"
     state: present
+
+# %%%%%%%%%%%%%%%%%%%%%% Configure repo google-drive-ocamlfuse %%%%%%%%%%%%%%%%%
+
+- name: Download gpg google-drive-ocamlfuse
+  ansible.builtin.get_url:
+    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9ea4d6fca5d37a5d1ca9c09aad5f235df639b041
+    dest: /etc/apt/trusted.gpg.d/armored-keys.asc
+    mode: "0644"
+
+- name: Add repository for google-drive-ocalmfuse
+  ansible.builtin.apt_repository:
+    repo: "ppa:alessandro-strada/ppa"
+    codename: "{{ ansible_distribution_release }}"
+    state: present

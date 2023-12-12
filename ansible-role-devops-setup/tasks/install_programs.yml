@@ -39,6 +39,11 @@
     deb: /tmp/discord.deb
     state: present
 
+- name: Install drawio new
+  ansible.builtin.apt:
+    deb: /tmp/drawio.deb
+    state: present
+
 - name: Install packages from snap
   community.general.snap:
     name: "{{ item }}"

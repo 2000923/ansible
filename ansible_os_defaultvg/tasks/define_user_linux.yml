@@ -8,21 +8,6 @@
   args:
     executable: /bin/bash
 
-- name: Create groups administrator
-  ansible.builtin.group:
-    name: eflores
-    state: present
-
-- name: Create user administrator
-  ansible.builtin.user:
-    name: "{{ item }}"
-    group: eflores
-    groups: users
-    state: present
-    shell: /bin/bash
-    append: true
-  loop: "{{ usuarios }}"
-
 - name: Install packages into Redhat
   ansible.builtin.dnf:
     name: "{{ item }}"
@@ -30,113 +15,26 @@
   loop:
     - cockpit
   when:
-    - os_vendor == "rhel"
-    - os_maj_release | int > 7
+    - ansible_distribution == "RedHat"
+    - ansible_distribution_major_version | int > 7
 
 - name: Enable and started services
   when:
-    - os_vendor == 'rhel'
-    - os_maj_release | int > 7
+    - ansible_distribution == "RedHat"
+    - ansible_distribution_major_version | int > 7
   ansible.builtin.service:
     name: cockpit
     enabled: true
-  register: cockpit_st
   notify: start cockpit
 
-- name: Add users to sudoers.d directory
-  ansible.builtin.template:
-    src: "usersudoers.j2"
-    dest: /etc/sudoers.d/{{ item }}
-    mode: "0600"
-  loop: "{{ usuarios }}"
-
-- name: Ensures dir exists
-  ansible.builtin.file:
-    path: "/home/{{ item }}/.ssh"
-    state: directory
-    owner: "{{ item }}"
-    group: eflores
-    mode: "0700"
-  loop: "{{ usuarios }}"
-  when: ansible_distribution != "Solaris"
-
-- name: Ensures dir exists
-  ansible.builtin.file:
-    path: "/export/home/{{ item }}/.ssh"
-    state: directory
-    owner: "{{ item }}"
-    group: eflores
-    mode: "0700"
-  loop: "{{ usuarios }}"
-  when: ansible_distribution == "Solaris"
-
-- name: Copy publicy key to os vagrant Linux
-  ansible.builtin.copy:
-    src: "{{ item }}/id_rsa.pub"
-    dest: "/home/{{ item }}/.ssh/authorized_keys"
-    mode: "0644"
-    owner: "{{ item }}"
-    group: "eflores"
-  loop: "{{ usuarios }}"
-  when: os_vendor != 'solaris'
-
-- name: Copy id_rsa.pub to host remote
-  ansible.builtin.copy:
-    src: "{{ item }}/id_rsa.pub"
-    dest: "/export/home/{{ item }}/.ssh/authorized_keys"
-    mode: "0644"
-    owner: "{{ item }}"
-    group: eflores
-  loop: "{{ usuarios }}"
-  when: os_vendor == 'solaris'
-
-# - name: Configure selinux enabled
-#   when:
-#     - ( os_vendor == 'rhel' or os_vendor == 'centos' )
-#   ansible.posix.selinux:
-#     policy: targeted
-#     state: enforcing
-#   register: selinux_disabled
-
-- name: Configure when selinux is enabled
-  when:
-    - ( os_vendor == 'rhel' )
-    - selinux is defined
-  ansible.posix.selinux:
-    state: enforcing
-    policy: targeted
-  register: selinux_disabled
-  notify:
-    - Reboot if SELinux is changed
-
-# - name: "Reboot to change the permise in selinux"
-#   when: selinux_disabled.changed != False
-#   ansible.builtin.reboot:
-#     reboot_timeout: 3600
-
-- name: Enabled firewalld service
-  when:
-    - ( os_vendor == 'rhel' or os_vendor == 'centos' )
-  ansible.builtin.service:
-    name: firewalld
-    state: started
-    enabled: true
-
 - name: Change language of keyboard us/es
-  when: os_vendor == 'debian'
+  when: ansible_os_family == "Debian"
   ansible.builtin.lineinfile:
     path: /etc/default/keyboard
     regexp: "XKBLAYOUT=*"
     line: 'XKBLAYOUT="es"'
   register: change_keyboard
   notify: Execute setupcon
-
-#  - name: If change keyboard is true
-#    when: change_keyboard.changed == true
-#    ansible.builtin.command: |
-#      setupcon
-#    register: setupcon_rst
-#    changed_when: setupcon_rst.rc != 0
 
 - name: Change enviroment in rhel
   when:

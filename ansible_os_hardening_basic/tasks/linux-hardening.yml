@@ -82,7 +82,7 @@
     - name: Configurar registro de historial de comandos en bash de SUSE o Debian/Ubuntu
       ansible.builtin.lineinfile:
         # path: /etc/bash.bashrc
-        path: /etc/{{ "bash.bashrc" if ansible_os_family == "Debian" and os_vendor == 'sles' else "bashrc" }}
+        path: /etc/{{ "bash.bashrc" if ansible_os_family == "Debian|SLES" else "bashrc" }}
         state: present
         regexp: '^\. /scripts/history-log.sh'
         line: ". /scripts/history-log.sh"

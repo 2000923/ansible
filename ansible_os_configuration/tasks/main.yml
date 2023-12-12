@@ -1,0 +1,6 @@
+---
+- name: Deshabilitar reinicio con Ctrl+Alt+Del en sistemas basados en Systemd
+  when: ansible_service_mgr is defined
+  ansible.builtin.systemd:
+    name: ctrl-alt-del.target
+    masked: true

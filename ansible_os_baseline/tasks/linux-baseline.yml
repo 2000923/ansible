@@ -8,7 +8,7 @@
   changed_when: check_yum.rc != 0
 
 - name: Update package cache for Zypper only
-  when: os_vendor == "sles"
+  when: ansible_os_family == "SLES"
   ansible.builtin.command:
     cmd: "zypper refresh"
   register: check_zypper
@@ -40,26 +40,17 @@
   ansible.builtin.set_fact:
     install_pkg: "{{ true if check_zypper.rc == 0 else false }}"
 
-- name: Install_pkg
-  ansible.builtin.debug:
-    var: install_pkg
-
 - name: Install packages to Operative System
-  when: install_pkg == true
+  when: install_pkg
   block:
-    - name: Show os
-      ansible.builtin.debug:
-        var: ansible_os_family
-
     - name: Include prerequisites to SO new
-      when: os_vendor == "sles"
+      when: ansible_os_family == "SLES"
       ansible.builtin.include_tasks: linux-prerequisites.yml
 
-    - name: Install generic package in redhat/debian/sles
+    - name: Install geneic package in redhat/debian/sles
       ansible.builtin.package:
-        name: "{{ item }}"
+        name: "{{ packages.default }}"
         state: present
-      loop: "{{ linux_generic_all_packages }}"
 
     - name: Instalar software de Red Hat/CentOS
       ansible.builtin.include_tasks: linux-redhat-software-installation.yml
@@ -73,15 +64,12 @@
 
     - name: Instalar software de SUSE
       ansible.builtin.include_tasks: linux-suse-software-installation.yml
-      when: os_vendor == 'sles'
+      when: ansible_os_family == 'SLES'
 
     - name: Instalar software de Amazon
-      ansible.builtin.include_tasks: linux-amazon-software-installation.yml
-      when: (os_vendor == 'amazon' and os_release != '2')
-
-    - name: Instalar software de Amazon 2
-      ansible.builtin.include_tasks: linux-amazon2-software-installation.yml
-      when: (os_vendor == 'amazon' and os_release == '2')
+      ansible.builtin.include_tasks:
+        file: '{{ "linux-amazon-software-installation" if ansible_distribution_major_version | int !=2 else linux-amazon2-software-installation }}'
+      when: ansible_distribution == 'Amazon'
 
     - name: Which the atd program
       ansible.builtin.command:
@@ -94,41 +82,7 @@
       ansible.builtin.service:
         name: atd
         state: started
-        enabled:
-          true
-
-          # - name: Configurar SSH - Deshabilitar consultas DNS
-          #   ansible.builtin.lineinfile:
-          #     path: /etc/ssh/sshd_config
-          #     regexp: "^UseDNS.*"
-          #     line: "UseDNS no"
-          #
-          # - name: Configurar SSH - Ajustes de keepalive 1
-          #   ansible.builtin.lineinfile:
-          #     path: /etc/ssh/sshd_config
-          #     regexp: "^ClientAliveInterval"
-          #     line: "ClientAliveInterval 30"
-          #
-          # - name: Change password authentication of no/yes
-          #   ansible.builtin.lineinfile:
-          #     path: /etc/ssh/sshd_config
-          #     regexp: "^#?PasswordAuthentication(.*)no"
-          #     line: "PasswordAuthentication yes"
-          #
-          # - name: Configurar SSH - Ajustes de keepalive 2
-          #   ansible.builtin.lineinfile:
-          #     path: /etc/ssh/sshd_config
-          #     regexp: "^ClientAliveCountMax"
-          #     line: "ClientAliveCountMax 5"
-          #   notify:
-          #     - restart sshd
-
-- name: Deshabilitar SELinux
-  ansible.posix.selinux:
-    state: disabled
-  when:
-    - os_vendor == "rhel"
-    - selinux == "false"
+        enabled: true
 
 - name: Personalizacion de parametros de kernel en RHEL/CentOS
   when:

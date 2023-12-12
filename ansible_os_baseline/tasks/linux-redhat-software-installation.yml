@@ -1,39 +1,39 @@
 ---
 - name: Install pkg generic epel for CentOS
-  when: os_vendor == "centos" or os_vendor == "oracle" or os_vendor == "rocky"
+  when: ansible_distribution != "RedHat"
   ansible.builtin.include_tasks:
     file: linux-redhat-software-epel.yml
 
 - name: Install packages generic to rhel
   ansible.builtin.package:
-    name: "{{ item }}"
+    name: "{{ packages[ansible_os_family].base }}"
     state: present
-  loop: "{{ linux_generic_rhel_packages }}"
 
-- name: Instalar software esencial en Redhat/Centos/Oracle < 6
+- name: Instalar software esencial en Redhat/Centos/Oracle
   ansible.builtin.yum:
-    name: "{{ linux_redhat6_packages }}"
+    name: "{{ packages[ansible_os_family][ansible_distribution_major_version | int] }}"
     state: present
-  when: ansible_distribution_major_version | int == 6
 
-- name: Instalar software esencial en Red Hat/CentOS/Oracle = 7
-  ansible.builtin.yum:
-    name: "{{ linux_redhat7_packages }}"
-    state: present
-  when: ansible_distribution_major_version | int == 7
-
-- name: Instalar software esencial en CentOS/RHEL/Oracle High Version = 8
-  ansible.builtin.dnf:
-    name: "{{ linux_redhat8_packages }}"
-    state: present
-  when: ansible_distribution_major_version | int == 8
-
-- name: Instalar software esencial en CentOS/RHEL/Oracle High Version = 9
-  ansible.builtin.dnf:
-    name: "{{ linux_redhat9_packages }}"
-    state: present
-  when: ansible_distribution_major_version | int == 9
-
+#   when: ansible_distribution_major_version | int == 6
+#
+# - name: Instalar software esencial en Red Hat/CentOS/Oracle = 7
+#   ansible.builtin.yum:
+#     name: "{{ linux_redhat7_packages }}"
+#     state: present
+#   when: ansible_distribution_major_version | int == 7
+#
+# - name: Instalar software esencial en CentOS/RHEL/Oracle High Version = 8
+#   ansible.builtin.dnf:
+#     name: "{{ linux_redhat8_packages }}"
+#     state: present
+#   when: ansible_distribution_major_version | int == 8
+#
+# - name: Instalar software esencial en CentOS/RHEL/Oracle High Version = 9
+#   ansible.builtin.dnf:
+#     name: "{{ linux_redhat9_packages }}"
+#     state: present
+#   when: ansible_distribution_major_version | int == 9
+#
 # - name: Instalar Server with GUI en RHEL 8-9 / CentOS 8-9 / Oracle 8-9
 #   ansible.builtin.command:
 #     cmd: dnf groupinstall -y --skip-broken "Server with GUI"

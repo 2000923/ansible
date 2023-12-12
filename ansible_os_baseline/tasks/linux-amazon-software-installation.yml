@@ -1,15 +1,14 @@
 ---
-- name: Install generic rhel software to amazon
-  ansible.builtin.package:
-    name: "{{ linux_generic_rhel_packages }}"
-    state: present
+# - name: Install generic rhel software to amazon
+#   ansible.builtin.package:
+#     name: "{{ packages['default'] }}"
+#     state: present
 
 - name: Install generic amazon software to amazon
   ansible.builtin.package:
-    name: "{{ linux_generic_amazon_packages }}"
+    name: "{{ packages[ansible_distribution][ansible_distribution_major_version | int] }}"
     state: present
-
-- name: Remover software innecesario
-  ansible.builtin.yum:
-    name: libvirt-daemon
-    state: absent
+# - name: Remover software innecesario
+#  ansible.builtin.yum:
+#    name: libvirt-daemon
+#    state: absent

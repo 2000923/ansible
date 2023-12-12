@@ -4,15 +4,15 @@
     path: "{{ epel_repofile_path }}"
   register: epel_repofile_result
 
+- name: 3.Import EPEL GPG key.
+  ansible.builtin.rpm_key:
+    key: "{{ epel_repo_gpg_key_url }}"
+    state: present
+  when: not epel_repofile_result.stat.exists
+
 - name: 2.Install EPEL repo.
   ansible.builtin.yum:
     name: "{{ epel_repo_url }}"
     state: present
   register: result
-  when: not epel_repofile_result.stat.exists
-
-- name: 3.Import EPEL GPG key.
-  ansible.builtin.rpm_key:
-    key: "{{ epel_repo_gpg_key_url }}"
-    state: present
   when: not epel_repofile_result.stat.exists

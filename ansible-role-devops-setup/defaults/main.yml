@@ -3,6 +3,7 @@ base_packages:
   # Dev tools
   - build-essential
   - ffmpeg
+  - gparted
   - libbz2-dev
   - libffi-dev
   - libgdbm-dev
@@ -35,6 +36,7 @@ base_packages:
   - gnome-remote-desktop
   - gnome-shell-pomodoro
   - gnupg
+  - google-drive-ocamlfuse
   - hfsprogs
   - host
   - htop
@@ -85,6 +87,7 @@ base_packages:
   - tree
   - ubuntu-advantage-tools
   - vagrant
+  - vorbis-tools
   - vlc
   - wget
   - whois
@@ -178,3 +181,4 @@ pip_packages:
   - jmespath
   - matplotlib
   - charts
+  - paramiko

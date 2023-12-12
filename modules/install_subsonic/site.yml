@@ -40,7 +40,6 @@
       notify: Restarted subsonic
 
     - name: Create directory for mount music and movies
-      tags: web
       ansible.builtin.file:
         path: /var/{{ item }}
         mode: "0755"
