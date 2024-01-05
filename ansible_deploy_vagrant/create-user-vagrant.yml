@@ -6,31 +6,31 @@
     client: ""
     port_ssh: "2222"
   tasks:
-    #    - name: Up values for subscription
-    #      when: ansible_distribution in ['RedHat','SLES','SLES-SAP']
-    #      ansible.builtin.include_tasks:
-    #        file: password.yml
-    #
-    #    - name: register the rhel/sles family
-    #      when: os_register_username is defined
-    #      ansible.builtin.include_role:
-    #        name: ansible_os_register
-    #
-    #    - name: personalice so vagrant with my users
-    #      ansible.builtin.include_role:
-    #        name: ansible_os_defaultvg
-    #
-    #    - name: create users systems and generic
-    #      ansible.builtin.include_role:
-    #        name: ansible_os_users
-    #
-    #    - name: configure base line
-    #      ansible.builtin.include_role:
-    #        name: ansible_os_baseline
-    #
-    #    - name: configure tools to monitoring
-    #      ansible.builtin.include_role:
-    #        name: ansible_os_monitoring
+    - name: Up values for subscription
+      when: ansible_distribution in ['RedHat','SLES','SLES-SAP']
+      ansible.builtin.include_tasks:
+        file: password.yml
+
+    - name: register the rhel/sles family
+      when: os_register_username is defined
+      ansible.builtin.include_role:
+        name: ansible_os_register
+
+    - name: personalice so vagrant with my users
+      ansible.builtin.include_role:
+        name: ansible_os_defaultvg
+
+    - name: create users systems and generic
+      ansible.builtin.include_role:
+        name: ansible_os_users
+
+    - name: configure base line
+      ansible.builtin.include_role:
+        name: ansible_os_baseline
+
+    - name: configure tools to monitoring
+      ansible.builtin.include_role:
+        name: ansible_os_monitoring
 
     - name: Apply hardening to remote server
       ansible.builtin.include_role:

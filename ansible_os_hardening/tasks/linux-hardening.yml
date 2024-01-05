@@ -98,7 +98,7 @@
     - name: Change password authentication of no/yes
       ansible.builtin.replace:
         path: /etc/ssh/sshd_config
-        regexp: '^#?(PasswordAuthentication)\s+.*$'
+        regexp: '^(PasswordAuthentication)\s+no$'
         replace: '\1 yes'
         validate: /usr/sbin/sshd -tf %s
       notify:

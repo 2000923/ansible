@@ -38,7 +38,7 @@
 
     - name: Apply hardening to remote server
       ansible.builtin.include_role:
-        name: ansible_os_hardenin
+        name: ansible_os_hardening
 
   #  - include_role:
   #      name: os_line_register_vagrant

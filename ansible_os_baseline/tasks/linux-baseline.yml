@@ -44,10 +44,10 @@
   when: install_pkg
   block:
     - name: Include prerequisites to SO new
-      when: ansible_os_family == "SLES"
+      when: ansible_os_family == "Suse"
       ansible.builtin.include_tasks: linux-prerequisites.yml
 
-    - name: Install geneic package in redhat/debian/sles
+    - name: Install generic package in redhat/debian/sles
       ansible.builtin.package:
         name: "{{ packages.default }}"
         state: present

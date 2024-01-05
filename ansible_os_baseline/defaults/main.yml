@@ -103,6 +103,7 @@ packages:
       - perl-LWP-Protocol-https
       - python3-PyMySQL
       - samba-common-tools
+
   SLES:
     - bc
     - bind-utils
@@ -124,7 +125,7 @@ packages:
     - lsscsi
     - libdate-manip-perl
     - nmon
-    - ntp
+    # - ntp
     - ntpdate
     - python3-pip
     - screen

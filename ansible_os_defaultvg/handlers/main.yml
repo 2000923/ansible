@@ -3,7 +3,7 @@
     name: ssh
     state: restarted
 
-- name: Start cockpit
+- name: start cockpit
   when:
     - ansible_distribution == "RedHat"
     - ansible_distribution_major_version | int > 7
