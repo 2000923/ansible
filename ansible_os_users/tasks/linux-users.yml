@@ -8,7 +8,7 @@
 
 - name: Create master directory
   ansible.builtin.file:
-    path: /home/"{{ home_enterprice }}"
+    path: /home/{{ home_enterprice }}
     state: directory
     mode: "0755"
 
